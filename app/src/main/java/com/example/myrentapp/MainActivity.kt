@@ -73,8 +73,6 @@ class MainActivity : ComponentActivity() {
                             composable("AvailableCar1") {
                                 CarViewAvailableCarLayout(sharedViewModel,navController)
                             }
-
-
                             composable("verhuren") {
                                 VerhurenFormLayout(sharedViewModel)
                             }
