@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hireTitle">Verhuren</string>
+    <string name="brand">Merk</string>
+    <string name="model">Model</string>
+    <string name="bouwjaar">Bouwjaar</string>
+    <string name="kenteken">Kenteken nummer</string>
+    <string name="fuelType">Brandstoftype</string>
+    <string name="RentCar">Verhuur je auto</string>
+    <string name="HireCar">Huur een auto</string>
+    <string name="CalcLooproute">Bereken looproute</string>
+    <string name="Confirm">Verhuur mijn auto</string>
+    <string name="TakePhoto">Maak foto</string>
+    <string name="titleHuren">Huren</string>
+    <string name="ConfirmHuren">Huur deze auto</string>
+    <string name="MyRentedCarData">Data gehuurde auto:</string>
+    <string name="LicenseValid">Rijbewijs geldig:</string>
+    <string name="titleLooproute">Looproute</string>
+    <string name="explanationLooproute">De looproute van uw locatie naar uw (gehuurde) auto.</string>
+    <string name="back">Terug</string>
+    <string name="MyCarTitle">Mijn Auto\'s</string>
+    <string name="Car1Txt">Auto 1</string>
+    <string name="Car2Txt">Auto 2</string>
+    <string name="Car3Txt">Auto 3</string>
+    <string name="Car4Txt">Auto 4</string>
+    <string name="CarDataTitle">Gegevens auto:</string>
+    <string name="CarData">"Merk: \\nModel: \\nBouwjaar: \\nKenteken: \\nBrandstoftype: "</string>
+</resources>

@@ -1,0 +1,48 @@
+<resources>
+    <string name="app_name" translatable="false">MyRentApp</string>
+
+
+
+
+    <!--    MyPersonalStartScreen-->
+
+    <!--    verhuren-->
+    <!--    foto maken-->
+
+    <!--huren-->
+
+    <!--    looproute berekenen-->
+<!--    of alleen looproute als titel? ivm te lang-->
+
+
+    <!--    algemeen-->
+    <string name="hireTitle">Hire</string>
+    <string name="brand">Brand</string>
+    <string name="model">Model</string>
+    <string name="bouwjaar">Build Year</string>
+    <string name="kenteken">License Plate Number</string>
+    <string name="fuelType">Fuel Type</string>
+    <string name="RentCar">Rent your car</string>
+    <string name="HireCar">Hire a car</string>
+    <string name="CalcLooproute">Calculate walking route</string>
+    <string name="Confirm">Rent my car</string>
+    <string name="TakePhoto">Take photo</string>
+    <string name="titleHuren">Hire</string>
+    <string name="ConfirmHuren">Hire this car</string>
+    <string name="MyRentedCarData">Data hired car:</string>
+    <string name="LicenseValid">License valid:</string>
+    <string name="titleLooproute">Walking route</string>
+    <string name="explanationLooproute">The walking route from your location to your (rented) car.</string>
+    <string name="back">Back</string>
+    <string name="CatalogusTitle" translatable="false">Catalogus</string>
+    <string name="MyCarTitle">My cars</string>
+    <string name="homeTitle" translatable="false">Home</string>
+    <string name="Car1Txt">Car 1</string>
+    <string name="Car2Txt">Car 2</string>
+    <string name="Car3Txt">Car 3</string>
+    <string name="Car4Txt">Car 4</string>
+    <string name="CarDataTitle">Car Data:</string>
+    <string name="CarData">"Brand: \\nModel: \\nBuildyear: \\nKenteken: \\nFueltype: "</string>
+
+
+</resources>
