@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
@@ -24,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
@@ -86,6 +88,18 @@ class MainActivity : ComponentActivity() {
                             composable("takePhoto") {
                                 MaakFotoLayout()
                             }
+                            //home screen
+                            composable("Login"){
+                                LoginFormLayout(sharedViewModel,navController)
+                            }
+
+                            composable("Register"){
+                                RegisterFormLayout(sharedViewModel,navController)
+                            }
+
+                            composable("HomeScreen"){
+                                HomeScreenLayout(sharedViewModel,navController)
+                            }
                         }
                     }
                 }
@@ -96,57 +110,72 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MyMainscreenLayout(navController: NavHostController) {
-
-    Column(
-
-        modifier = Modifier
-            //.statusBarsPadding()
-            .padding(horizontal = 150.dp)
-            //.verticalScroll(rememberScrollState())
-            .safeDrawingPadding(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        //title
-        Spacer(modifier = Modifier.height(10.dp))
-
-        Text(
-            text = stringResource(R.string.homeTitle),
-            style = MaterialTheme.typography.displaySmall,
-            //placeholder
-        )
-    }
     Column(
         modifier = Modifier
             .statusBarsPadding()
-            .padding(horizontal = 40.dp)
-            //.verticalScroll(rememberScrollState())
-            .fillMaxSize()
+            .padding(horizontal = 16.dp) // Verminderde horizontale padding
+            .verticalScroll(rememberScrollState())
             .safeDrawingPadding(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+        // Button "Inloggen" verplaatst naar buiten de Column met de titel
 
+        Spacer(modifier = Modifier.height(20.dp))
 
-            Button(onClick = { navController.navigate("catalogus")}) {
-                Text(stringResource(R.string.CatalogusTitle))
+        Button(
+            onClick = { navController.navigate("Login") },
+            modifier = Modifier
+                 // De volledige breedte van de rij innemen
+                .align(Alignment.End)
+                //.padding(end = 16.dp) // Rechtse padding toevoegen
+        ) {
+            Text(
+                text = stringResource(R.string.Login),
+                style = MaterialTheme.typography.bodySmall // Kleinere tekstgrootte
+            )
+        }
+
+        Spacer(modifier = Modifier.height(175.dp))
+
+        // Titel met vetgedrukte stijl en verspreide tekst over het scherm
+        Text(
+            text = stringResource(R.string.MainTitle),
+            style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+        )
+
+        Spacer(modifier = Modifier.height(30.dp))
+
+        // Intro tekst met kleinere tekstgrootte en verspreide tekst over het scherm
+        Text(
+            text = stringResource(R.string.IntroTxt),
+            style = MaterialTheme.typography.bodyMedium, // Kleinere tekstgrootte
+            modifier = Modifier.fillMaxWidth() // Tekst verspreiden over het scherm
+        )
+
+        Spacer(modifier = Modifier.height(30.dp))
+
+        Column(
+            modifier = Modifier,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            // Navigatieknop "Registreren" met verspreide tekst over het scherm
+            Button(
+                onClick = { navController.navigate("Register") },
+                modifier = Modifier.fillMaxWidth() // Knop de volledige breedte van de rij laten innemen
+            ) {
+                Text(stringResource(R.string.RegisterTitle))
             }
-            Button(onClick = { navController.navigate("myCars")}) {
-                Text(stringResource(R.string.MyCarTitle))
-            }
-            Button(onClick = { navController.navigate("verhuren")
-            }) {
-                Text(stringResource(R.string.RentCar))
-            }
-        //was eigenlijk hetzelfde als catalogus,omdat je naar catalogus gaat om een car te bekijken en te huren
-//            Button(onClick = { navController.navigate(("huren")) }) {
-//                Text(stringResource(R.string.HireCar))
-//            }
-//            Button(onClick = { navController.navigate("looproute")}) {
-//                Text(stringResource(R.string.CalcLooproute))
-//            }
+
+            Spacer(modifier = Modifier.height(15.dp))
+        }
+
+        Spacer(modifier = Modifier.height(150.dp))
     }
 }
+
 
 @Preview(showBackground = true)
 @Composable

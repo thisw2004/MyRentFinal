@@ -43,6 +43,13 @@
     <string name="Car4Txt">Car 4</string>
     <string name="CarDataTitle">Car Data:</string>
     <string name="CarData">"Brand: \\nModel: \\nBuildyear: \\nKenteken: \\nFueltype: "</string>
+    <string name="LoginTitle">"Login"</string>
+    <string name="Username">Username</string>
+    <string name="Login">Login</string>
+    <string name="Password">Password</string>
+    <string name="RegisterTitle">Register</string>
+    <string name="MainTitle" translatable="false">MyRent</string>
+    <string name="IntroTxt">Welcome to MyRent!  Here you can easily find and rent cars, all at your fingertips. Whether you need a quick ride or want to earn some extra by sharing your own car, we have everything you need.  So, let\'s hit the road together and redefine mobility. Have fun with MyRent!</string>
 
 
 </resources>

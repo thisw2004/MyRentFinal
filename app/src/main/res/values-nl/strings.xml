@@ -25,4 +25,10 @@
     <string name="Car4Txt">Auto 4</string>
     <string name="CarDataTitle">Gegevens auto:</string>
     <string name="CarData">"Merk: \\nModel: \\nBouwjaar: \\nKenteken: \\nBrandstoftype: "</string>
+    <string name="LoginTitle">Inloggen</string>
+    <string name="Username">Gebruikersnaam</string>
+    <string name="Login">Inloggen</string>
+    <string name="Password">Wachtwoord</string>
+    <string name="RegisterTitle">Registreren</string>
+    <string name="IntroTxt">" Welkom bij MyRent!  Hier kun je gemakkelijk auto's vinden en verhuren, allemaal binnen handbereik. Of je nu snel een ritje nodig hebt of wat extra wilt verdienen door je eigen auto te delen, we hebben alles wat je nodig hebt.  Dus, laten we samen de weg op gaan en de mobiliteit opnieuw definiëren. Veel plezier met MyRent!"</string>
 </resources>
