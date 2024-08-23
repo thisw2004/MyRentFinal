@@ -41,8 +41,8 @@ import androidx.navigation.compose.rememberNavController
 import com.example.myrentapp.ui.theme.MyRentAppTheme
 import java.text.NumberFormat
 
-//todo: hoe data meegeven aan andere schermen? staat wellicht in developer.google.com manuals
-//veel data moet ook meegegeven worden aan api. >> eerst api werkend krijgen
+//data gaat vanuit schermen in api,api verwerkt data en geeft deze aan andere schermen en/of zorgt ervoor
+//dat user wordt doorgestuurd naar ander scherm.
 
 class Login : ComponentActivity() {
     private val viewModel by lazy {
