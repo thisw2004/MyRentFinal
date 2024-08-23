@@ -113,7 +113,7 @@ fun LoginFormLayout(viewModel: SharedViewModel,navController: NavController) {
                 .align(alignment = Alignment.Start)
         )
         LoginField(
-            value = PasswordInput,
+            value = PasswordInput,//
             onValueChanged = { PasswordInput = it },
             modifier = Modifier
                 .padding(bottom = 32.dp)
