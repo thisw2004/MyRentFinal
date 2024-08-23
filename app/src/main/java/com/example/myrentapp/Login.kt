@@ -86,7 +86,7 @@ fun LoginFormLayout(viewModel: SharedViewModel,navController: NavController) {
         Text(
             text = stringResource(R.string.LoginTitle),
             style = MaterialTheme.typography.displaySmall,
-            //placeholder
+            //placeholder evt.
 
         )
         //field 1,Username
