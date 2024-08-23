@@ -10,7 +10,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.myrentapp.ui.theme.MyRentAppTheme
 
 @Composable
 fun HomeScreenLayout(sharedViewModel: SharedViewModel, navController: NavController) {
@@ -24,7 +23,7 @@ fun HomeScreenLayout(sharedViewModel: SharedViewModel, navController: NavControl
             text = "Home",
             style = MaterialTheme.typography.headlineLarge,
             fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(top = 16.dp, bottom = 32.dp)
+            modifier = Modifier.padding(bottom = 32.dp)
         )
 
         Spacer(modifier = Modifier.weight(1f))
@@ -56,17 +55,26 @@ fun HomeScreenLayout(sharedViewModel: SharedViewModel, navController: NavControl
             Text("Rent your car")
         }
 
-        Spacer(modifier = Modifier.weight(2f))
+        Spacer(modifier = Modifier.weight(1f))
+
+        Button(
+            onClick = {
+                // Implement logout logic here
+                navController.navigate("mymainscreen") {
+                    popUpTo("mymainscreen") { inclusive = true }
+                }
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Logout")
+        }
     }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun HomeScreenLayoutPreview() {
-    MyRentAppTheme {
-        HomeScreenLayout(
-            sharedViewModel = SharedViewModel(),
-            navController = rememberNavController()
-        )
+    MaterialTheme {
+        HomeScreenLayout(SharedViewModel(), rememberNavController())
     }
 }
