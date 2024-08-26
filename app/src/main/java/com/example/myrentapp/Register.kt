@@ -1,165 +1,86 @@
-
 package com.example.myrentapp
 
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawingPadding
-import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.Placeholder
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-import com.example.myrentapp.ui.theme.MyRentAppTheme
-import java.text.NumberFormat
 
-//todo: hoe data meegeven aan andere schermen? staat wellicht in developer.google.com manuals
-//veel data moet ook meegegeven worden aan api. >> eerst api werkend krijgen
+@Composable
+fun RegisterFormLayout(viewModel: SharedViewModel, navController: NavController) {
+    var username by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
+    val registerState by viewModel.registerState.collectAsState()
 
-class Register : ComponentActivity() {
-    private val viewModel by lazy {
-        ViewModelProvider(this).get(SharedViewModel::class.java)
+    // Reset the ViewModel state when entering this screen
+    LaunchedEffect(Unit) {
+        viewModel.logout()
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        enableEdgeToEdge()
-        super.onCreate(savedInstanceState)
-        setContent {
-            MyRentAppTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text("Register", style = MaterialTheme.typography.headlineMedium)
+        Spacer(modifier = Modifier.height(16.dp))
+
+        OutlinedTextField(
+            value = username,
+            onValueChange = { username = it },
+            label = { Text("Username") },
+            modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+
+        OutlinedTextField(
+            value = password,
+            onValueChange = { password = it },
+            label = { Text("Password") },
+            visualTransformation = PasswordVisualTransformation(),
+            modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+
+        OutlinedTextField(
+            value = email,
+            onValueChange = { email = it },
+            label = { Text("Email") },
+            modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+
+        when (registerState) {
+            is RegisterState.Idle, is RegisterState.Error -> {
+                Button(
+                    onClick = { viewModel.register(username, password, email) },
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    RegisterFormLayout(viewModel = viewModel, navController = rememberNavController() )
+                    Text("Register")
+                }
+                if (registerState is RegisterState.Error) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = (registerState as RegisterState.Error).message,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+            }
+            is RegisterState.Loading -> {
+                CircularProgressIndicator()
+            }
+            is RegisterState.Success -> {
+                LaunchedEffect(Unit) {
+                    navController.navigate("HomeScreen") {
+                        popUpTo("Register") { inclusive = true }
+                    }
                 }
             }
         }
     }
 }
-
-
-@Composable
-fun RegisterFormLayout(viewModel: SharedViewModel,navController: NavController) {
-    //alle velden hier toevoegen!
-    var UsernameInput by remember { mutableStateOf("") }
-    var PasswordInput by remember { mutableStateOf("") }
-
-
-
-    Column(
-        modifier = Modifier
-            .statusBarsPadding()
-            .padding(horizontal = 40.dp)
-            .verticalScroll(rememberScrollState())
-            .safeDrawingPadding(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        //title
-        Text(
-            text = stringResource(R.string.RegisterTitle),
-            style = MaterialTheme.typography.displaySmall,
-            //placeholder
-
-        )
-        //field 1,Username
-        Text(
-            text = stringResource(R.string.Username),
-            modifier = Modifier
-                .padding(bottom = 16.dp, top = 10.dp)
-                .align(alignment = Alignment.Start)
-        )
-        RegisterField(
-            value = UsernameInput,
-            onValueChanged = { UsernameInput = it },
-
-            modifier = Modifier
-                //.padding(bottom = 32.dp)
-                .fillMaxWidth(),
-
-            )
-        //field 2,password
-        Text(
-            text = stringResource(R.string.Password),
-            modifier = Modifier
-                .padding(bottom = 16.dp, top = 7.dp)
-                .align(alignment = Alignment.Start)
-        )
-        RegisterField(
-            value = PasswordInput,
-            onValueChanged = { PasswordInput = it },
-            modifier = Modifier
-                .padding(bottom = 32.dp)
-                .fillMaxWidth()
-        )
-
-
-
-        //button for confirming the form
-        Column(
-            modifier = Modifier,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            //navigate to take photo
-            Button(onClick = {navController.navigate("HomeScreen") }){
-                Text(stringResource(R.string.RegisterTitle))
-            }
-
-        }
-
-        Spacer(modifier = Modifier.height(150.dp))
-    }
-}
-
-@Composable
-fun RegisterField(
-    value: String,
-    onValueChanged: (String) -> Unit,
-    modifier: Modifier
-) {
-    TextField(
-        value = value,
-        singleLine = true,
-        modifier = modifier,
-        onValueChange = onValueChanged,
-        //label = { Text(stringResource(R.string.bill_amount)) } hier if satement basen on what? of apart if in functie😜,
-        //keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-    )
-}
-
-
-@Preview(showBackground = true)
-@Composable
-fun RegisterLayoutPreview() {
-    MyRentAppTheme {
-        RegisterFormLayout(SharedViewModel(), rememberNavController())
-    }
-}
-
