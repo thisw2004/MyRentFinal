@@ -48,7 +48,7 @@ interface MyRentApi {
     suspend fun register(@Body registerRequest: RegisterRequest): Response<ResponseBody>
 }
 
-class SharedViewModel : ViewModel() {
+class UserViewModel : ViewModel() {
     private val _loginState = MutableStateFlow<LoginState>(LoginState.Idle)
     val loginState: StateFlow<LoginState> = _loginState
 

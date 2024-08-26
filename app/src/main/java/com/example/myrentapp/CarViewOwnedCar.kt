@@ -45,7 +45,7 @@ import androidx.navigation.compose.rememberNavController
 
 class CarViewOwnedCar : ComponentActivity() {
     private val viewModel by lazy {
-        ViewModelProvider(this).get(SharedViewModel::class.java)
+        ViewModelProvider(this).get(CarViewModel::class.java)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,7 +65,7 @@ class CarViewOwnedCar : ComponentActivity() {
 
 //deze is voor als je van mijn auto's komt ;) (voor simulation)
 @Composable
-fun CarViewOwnedCarLayout(viewModel: SharedViewModel, navController: NavController) {
+fun CarViewOwnedCarLayout(viewModel: CarViewModel, navController: NavController) {
 
 
     Column(
@@ -135,7 +135,7 @@ fun CarViewOwnedCarLayout(viewModel: SharedViewModel, navController: NavControll
 @Composable
 fun CarViewOwnedCarPreview() {
     MyRentAppTheme {
-        CarViewOwnedCarLayout(SharedViewModel(), rememberNavController())
+        CarViewOwnedCarLayout(CarViewModel(), rememberNavController())
     }
 }
 

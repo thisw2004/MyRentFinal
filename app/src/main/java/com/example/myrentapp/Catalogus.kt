@@ -45,11 +45,11 @@ import androidx.navigation.compose.rememberNavController
 
 //dit is het main scherm dus hier start de app dus vanuit deze alle andere schermen aanroepen
 //todo: hoe data meegeven aan andere schermen? staat wellicht in developer.google.com manuals
-//veel data moet ook meegegeven worden aan api. >> eerst api werkend krijgen
+//veel data moet ook meegegeven worden aan api.
 
 class Catalogus : ComponentActivity() {
     private val viewModel by lazy {
-        ViewModelProvider(this).get(SharedViewModel::class.java)
+        ViewModelProvider(this).get(CarViewModel::class.java)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,7 +69,7 @@ class Catalogus : ComponentActivity() {
 
 
 @Composable
-fun CatalogusLayout(viewModel: SharedViewModel,navController: NavController) {
+fun CatalogusLayout(viewModel: CarViewModel,navController: NavController) {
 
 
     Column(
@@ -124,7 +124,7 @@ fun CatalogusLayout(viewModel: SharedViewModel,navController: NavController) {
 @Composable
 fun CatalogusPreview() {
     MyRentAppTheme {
-        CatalogusLayout(SharedViewModel(), rememberNavController())
+        CatalogusLayout(CarViewModel(), rememberNavController())
     }
 }
 

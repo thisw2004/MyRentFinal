@@ -1,6 +1,8 @@
 package com.example.myrentapp
 
-import com.example.myrentapp.SharedViewModel
+import com.example.myrentapp.UserViewModel
+import com.example.myrentapp.CarViewModel
+
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -26,7 +28,8 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val navController = rememberNavController()
-                    val sharedViewModel: SharedViewModel = viewModel()
+                    val UserViewModel : UserViewModel = viewModel()
+                    val CarViewModel : CarViewModel = viewModel()
 
                     NavHost(
                         navController = navController,
@@ -36,37 +39,37 @@ class MainActivity : ComponentActivity() {
                             MyMainscreenLayout(navController)
                         }
                         composable("catalogus") {
-                            CatalogusLayout(sharedViewModel, navController)
+                            CatalogusLayout(CarViewModel, navController)
                         }
                         composable("myCars") {
-                            MyCarsLayout(sharedViewModel, navController)
+                            MyCarsLayout(CarViewModel, navController)
                         }
                         composable("OwnedCar1") {
-                            CarViewOwnedCarLayout(sharedViewModel, navController)
+                            CarViewOwnedCarLayout(CarViewModel, navController)
                         }
                         composable("AvailableCar1") {
-                            CarViewAvailableCarLayout(sharedViewModel, navController)
+                            CarViewAvailableCarLayout(CarViewModel, navController)
                         }
                         composable("verhuren") {
-                            VerhurenFormLayout(sharedViewModel, navController)
+                            VerhurenFormLayout(CarViewModel, navController)
                         }
                         composable("huren") {
-                            HurenLayout()
+                            HurenLayout() //geen viewmodel,navcontroller?
                         }
                         composable("looproute") {
-                            CalcLooprouteLayout()
+                            CalcLooprouteLayout() //geen viewmodel,navcontroller?
                         }
                         composable("takePhoto") {
-                            MaakFotoLayout()
+                            MaakFotoLayout() //geen viewmodel,navcontroller?
                         }
                         composable("Login") {
-                            LoginFormLayout(sharedViewModel, navController)
+                            LoginFormLayout(UserViewModel, navController)
                         }
                         composable("Register") {
-                            RegisterFormLayout(sharedViewModel, navController)
+                            RegisterFormLayout(UserViewModel, navController)
                         }
                         composable("HomeScreen") {
-                            HomeScreenLayout(sharedViewModel, navController)
+                            HomeScreenLayout(UserViewModel, navController)
                         }
                     }
                 }

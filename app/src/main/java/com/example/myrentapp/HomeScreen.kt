@@ -12,7 +12,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 
 @Composable
-fun HomeScreenLayout(sharedViewModel: SharedViewModel, navController: NavController) {
+fun HomeScreenLayout(sharedViewModel: UserViewModel, navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -75,6 +75,6 @@ fun HomeScreenLayout(sharedViewModel: SharedViewModel, navController: NavControl
 @Composable
 fun HomeScreenLayoutPreview() {
     MaterialTheme {
-        HomeScreenLayout(SharedViewModel(), rememberNavController())
+        HomeScreenLayout(UserViewModel(), rememberNavController())
     }
 }

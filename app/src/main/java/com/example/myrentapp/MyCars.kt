@@ -48,7 +48,7 @@ import androidx.navigation.compose.rememberNavController
 
 class MyCars : ComponentActivity() {
     private val viewModel by lazy {
-        ViewModelProvider(this).get(SharedViewModel::class.java)
+        ViewModelProvider(this).get(CarViewModel::class.java)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,7 +69,7 @@ class MyCars : ComponentActivity() {
 
 
 @Composable
-fun MyCarsLayout(viewModel: SharedViewModel, navController: NavController) {
+fun MyCarsLayout(viewModel: CarViewModel, navController: NavController) {
     //alle velden hier toevoegen!
 
 
@@ -124,7 +124,7 @@ fun MyCarsLayout(viewModel: SharedViewModel, navController: NavController) {
 @Composable
 fun MyCarsPreview() {
     MyRentAppTheme {
-        MyCarsLayout(SharedViewModel(), rememberNavController())
+        MyCarsLayout(CarViewModel(), rememberNavController())
     }
 }
 

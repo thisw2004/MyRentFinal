@@ -21,12 +21,12 @@ import androidx.navigation.NavController
 import androidx.compose.ui.text.style.TextAlign  // Add this import for the align modifier
 
 class Verhuren : ComponentActivity() {
-    private lateinit var viewModel: SharedViewModel
+    private lateinit var viewModel: CarViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(SharedViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(CarViewModel::class.java)
         setContent {
             MyRentAppTheme {
                 Surface(
@@ -41,7 +41,7 @@ class Verhuren : ComponentActivity() {
 }
 
 @Composable
-fun VerhurenFormLayout(viewModel: SharedViewModel, navController: NavController) {
+fun VerhurenFormLayout(viewModel: CarViewModel, navController: NavController) {
     var brandInput by remember { mutableStateOf("") }
     var modelInput by remember { mutableStateOf("") }
     var buildInput by remember { mutableStateOf("") }
@@ -108,6 +108,6 @@ fun VerhurenInputField(label: Int, value: String, onValueChange: (String) -> Uni
 @Composable
 fun VerhurenFormLayoutPreview() {
     MyRentAppTheme {
-        VerhurenFormLayout(viewModel = SharedViewModel(), navController = rememberNavController())
+        VerhurenFormLayout(viewModel = CarViewModel(), navController = rememberNavController())
     }
 }
