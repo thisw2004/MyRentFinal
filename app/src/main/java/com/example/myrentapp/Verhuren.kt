@@ -84,6 +84,7 @@ fun VerhurenFormLayout(viewModel: CarViewModel, navController: NavController) {
             textAlign = TextAlign.Center
         )
 
+
         VerhurenInputField(label = R.string.brand, value = brandInput, onValueChange = { brandInput = it })
         VerhurenInputField(label = R.string.model, value = modelInput, onValueChange = { modelInput = it })
         VerhurenInputField(label = R.string.bouwjaar, value = buildYearInput, onValueChange = { buildYearInput = it })
