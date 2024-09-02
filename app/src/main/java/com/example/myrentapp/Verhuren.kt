@@ -3,6 +3,7 @@ package com.example.myrentapp
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
+import android.provider.OpenableColumns
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
@@ -52,7 +53,6 @@ class Verhuren : ComponentActivity() {
     }
 }
 
-//TODO: test select photo to upload here on physical device.
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun VerhurenFormLayout(viewModel: CarViewModel, navController: NavController) {
@@ -67,20 +67,24 @@ fun VerhurenFormLayout(viewModel: CarViewModel, navController: NavController) {
 
     var showPhotoDialog by remember { mutableStateOf(false) }
     var photoUri by remember { mutableStateOf<Uri?>(null) }
-    var photoTaken by remember { mutableStateOf(false) }
+    var photoName by remember { mutableStateOf<String?>(null) }
 
     val context = LocalContext.current
     val cameraPermissionState = rememberPermissionState(android.Manifest.permission.CAMERA)
 
     val takePhoto = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { success ->
         if (success) {
-            photoTaken = true
+            photoUri?.let { uri ->
+                photoName = getFileNameFromUri(context, uri)
+            }
         }
     }
 
     val pickPhoto = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         photoUri = uri
-        photoTaken = uri != null
+        uri?.let {
+            photoName = getFileNameFromUri(context, it)
+        }
     }
 
     Column(
@@ -116,9 +120,9 @@ fun VerhurenFormLayout(viewModel: CarViewModel, navController: NavController) {
             Text(stringResource(R.string.ChoosePhotoBtn))
         }
 
-        if (photoTaken) {
+        photoName?.let {
             Text(
-                text = "Photo selected",
+                text = "$it uploaded",
                 modifier = Modifier.padding(vertical = 8.dp)
             )
         }
@@ -188,19 +192,44 @@ fun VerhurenInputField(label: Int, value: String, onValueChange: (String) -> Uni
 }
 
 fun createImageUri(context: Context): Uri {
-    val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
-    val imageFileName = "JPEG_" + timeStamp + "_"
+    val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+    val datePart = dateFormat.format(Date())
+
     val storageDir: File? = context.getExternalFilesDir(android.os.Environment.DIRECTORY_PICTURES)
-    val image = File.createTempFile(
-        imageFileName,  /* prefix */
-        ".jpg",         /* suffix */
-        storageDir      /* directory */
-    )
+    val existingFiles = storageDir?.listFiles { file ->
+        file.name.startsWith(datePart)
+    } ?: emptyArray()
+
+    val sequenceNumber = existingFiles.size + 1
+    val imageFileName = "${datePart}_${sequenceNumber}.jpg"
+
+    val image = File(storageDir, imageFileName)
+
     return FileProvider.getUriForFile(
         context,
         "com.example.myrentapp.fileprovider",
         image
     )
+}
+
+fun getFileNameFromUri(context: Context, uri: Uri): String {
+    var result = "photo"  // Default name
+    if (uri.scheme == "content") {
+        val cursor = context.contentResolver.query(uri, null, null, null, null)
+        cursor?.use {
+            if (it.moveToFirst()) {
+                val displayNameIndex = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                if (displayNameIndex != -1) {
+                    result = it.getString(displayNameIndex)
+                }
+            }
+        }
+    }
+    if (result == "photo") {
+        // If we couldn't get the name from the content resolver, extract it from the URI
+        result = uri.path?.let { File(it).name } ?: "photo"
+    }
+    return result
 }
 
 @Preview(showBackground = true)
