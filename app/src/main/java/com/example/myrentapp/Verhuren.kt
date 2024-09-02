@@ -1,5 +1,6 @@
 package com.example.myrentapp
 
+import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -14,14 +15,22 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.FileProvider
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.compose.rememberNavController
 import com.example.myrentapp.ui.theme.MyRentAppTheme
 import androidx.navigation.NavController
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberPermissionState
+import com.google.accompanist.permissions.isGranted
+import java.io.File
+import java.text.SimpleDateFormat
+import java.util.*
 
 class Verhuren : ComponentActivity() {
     private lateinit var viewModel: CarViewModel
@@ -43,6 +52,8 @@ class Verhuren : ComponentActivity() {
     }
 }
 
+//TODO: test select photo to upload here on physical device.
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun VerhurenFormLayout(viewModel: CarViewModel, navController: NavController) {
     var brandInput by remember { mutableStateOf("") }
@@ -56,17 +67,20 @@ fun VerhurenFormLayout(viewModel: CarViewModel, navController: NavController) {
 
     var showPhotoDialog by remember { mutableStateOf(false) }
     var photoUri by remember { mutableStateOf<Uri?>(null) }
+    var photoTaken by remember { mutableStateOf(false) }
+
+    val context = LocalContext.current
+    val cameraPermissionState = rememberPermissionState(android.Manifest.permission.CAMERA)
 
     val takePhoto = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { success ->
         if (success) {
-            // Photo was taken successfully
-            // You might want to update the UI to show that a photo was taken
+            photoTaken = true
         }
     }
 
     val pickPhoto = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         photoUri = uri
-        // You might want to update the UI to show that a photo was selected
+        photoTaken = uri != null
     }
 
     Column(
@@ -84,7 +98,6 @@ fun VerhurenFormLayout(viewModel: CarViewModel, navController: NavController) {
             textAlign = TextAlign.Center
         )
 
-
         VerhurenInputField(label = R.string.brand, value = brandInput, onValueChange = { brandInput = it })
         VerhurenInputField(label = R.string.model, value = modelInput, onValueChange = { modelInput = it })
         VerhurenInputField(label = R.string.bouwjaar, value = buildYearInput, onValueChange = { buildYearInput = it })
@@ -101,6 +114,13 @@ fun VerhurenFormLayout(viewModel: CarViewModel, navController: NavController) {
                 .padding(vertical = 16.dp)
         ) {
             Text(stringResource(R.string.ChoosePhotoBtn))
+        }
+
+        if (photoTaken) {
+            Text(
+                text = "Photo selected",
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
         }
 
         Button(
@@ -126,9 +146,12 @@ fun VerhurenFormLayout(viewModel: CarViewModel, navController: NavController) {
             confirmButton = {
                 TextButton(onClick = {
                     showPhotoDialog = false
-                    // You'll need to create a URI for the new photo here
-                    // For simplicity, we're using null, but you should create a proper URI
-                    takePhoto.launch(null)
+                    if (cameraPermissionState.status.isGranted) {
+                        photoUri = createImageUri(context)
+                        takePhoto.launch(photoUri)
+                    } else {
+                        cameraPermissionState.launchPermissionRequest()
+                    }
                 }) {
                     Text("Take Photo")
                 }
@@ -161,6 +184,22 @@ fun VerhurenInputField(label: Int, value: String, onValueChange: (String) -> Uni
         modifier = Modifier
             .fillMaxWidth()
             .padding(bottom = 16.dp)
+    )
+}
+
+fun createImageUri(context: Context): Uri {
+    val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+    val imageFileName = "JPEG_" + timeStamp + "_"
+    val storageDir: File? = context.getExternalFilesDir(android.os.Environment.DIRECTORY_PICTURES)
+    val image = File.createTempFile(
+        imageFileName,  /* prefix */
+        ".jpg",         /* suffix */
+        storageDir      /* directory */
+    )
+    return FileProvider.getUriForFile(
+        context,
+        "com.example.myrentapp.fileprovider",
+        image
     )
 }
 
