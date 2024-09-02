@@ -31,4 +31,8 @@
     <string name="Password">Wachtwoord</string>
     <string name="RegisterTitle">Registreren</string>
     <string name="IntroTxt">" Welkom bij MyRent!  Hier kun je gemakkelijk auto's vinden en verhuren, allemaal binnen handbereik. Of je nu snel een ritje nodig hebt of wat extra wilt verdienen door je eigen auto te delen, we hebben alles wat je nodig hebt.  Dus, laten we samen de weg op gaan en de mobiliteit opnieuw definiëren. Veel plezier met MyRent!"</string>
+    <string name="Usage">Verbruik</string>
+    <string name="Mileage">Km stand</string>
+    <string name="Location">Locatie</string>
+    <string name="ChoosePhotoBtn">Kies of maak foto</string>
 </resources>

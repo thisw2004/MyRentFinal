@@ -50,6 +50,10 @@
     <string name="RegisterTitle">Register</string>
     <string name="MainTitle" translatable="false">MyRent</string>
     <string name="IntroTxt">Welcome to MyRent!  Here you can easily find and rent cars, all at your fingertips. Whether you need a quick ride or want to earn some extra by sharing your own car, we have everything you need.  So, let\'s hit the road together and redefine mobility. Have fun with MyRent!</string>
+    <string name="Usage">Usage</string>
+    <string name="Mileage">Mileage</string>
+    <string name="Location">Location</string>
+    <string name="ChoosePhotoBtn">Choose or take Photo</string>
 
 
 </resources>

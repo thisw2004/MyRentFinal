@@ -1,9 +1,12 @@
 package com.example.myrentapp
 
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -12,13 +15,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.compose.rememberNavController
 import com.example.myrentapp.ui.theme.MyRentAppTheme
 import androidx.navigation.NavController
-import androidx.compose.ui.text.style.TextAlign  // Add this import for the align modifier
 
 class Verhuren : ComponentActivity() {
     private lateinit var viewModel: CarViewModel
@@ -44,9 +47,27 @@ class Verhuren : ComponentActivity() {
 fun VerhurenFormLayout(viewModel: CarViewModel, navController: NavController) {
     var brandInput by remember { mutableStateOf("") }
     var modelInput by remember { mutableStateOf("") }
-    var buildInput by remember { mutableStateOf("") }
+    var buildYearInput by remember { mutableStateOf("") }
     var kentekenInput by remember { mutableStateOf("") }
-    var fuelInput by remember { mutableStateOf("") }
+    var brandstofInput by remember { mutableStateOf("") }
+    var verbruikInput by remember { mutableStateOf("") }
+    var kmStandInput by remember { mutableStateOf("") }
+    var locationInput by remember { mutableStateOf("") }
+
+    var showPhotoDialog by remember { mutableStateOf(false) }
+    var photoUri by remember { mutableStateOf<Uri?>(null) }
+
+    val takePhoto = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { success ->
+        if (success) {
+            // Photo was taken successfully
+            // You might want to update the UI to show that a photo was taken
+        }
+    }
+
+    val pickPhoto = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+        photoUri = uri
+        // You might want to update the UI to show that a photo was selected
+    }
 
     Column(
         modifier = Modifier
@@ -60,28 +81,66 @@ fun VerhurenFormLayout(viewModel: CarViewModel, navController: NavController) {
         Text(
             text = stringResource(R.string.hireTitle),
             style = MaterialTheme.typography.displaySmall,
-            textAlign = TextAlign.Center  // Use textAlign instead of align for Text
+            textAlign = TextAlign.Center
         )
 
         VerhurenInputField(label = R.string.brand, value = brandInput, onValueChange = { brandInput = it })
         VerhurenInputField(label = R.string.model, value = modelInput, onValueChange = { modelInput = it })
-        VerhurenInputField(label = R.string.bouwjaar, value = buildInput, onValueChange = { buildInput = it })
+        VerhurenInputField(label = R.string.bouwjaar, value = buildYearInput, onValueChange = { buildYearInput = it })
         VerhurenInputField(label = R.string.kenteken, value = kentekenInput, onValueChange = { kentekenInput = it })
-        VerhurenInputField(label = R.string.fuelType, value = fuelInput, onValueChange = { fuelInput = it })
+        VerhurenInputField(label = R.string.fuelType, value = brandstofInput, onValueChange = { brandstofInput = it })
+        VerhurenInputField(label = R.string.Usage, value = verbruikInput, onValueChange = { verbruikInput = it })
+        VerhurenInputField(label = R.string.Mileage, value = kmStandInput, onValueChange = { kmStandInput = it })
+        VerhurenInputField(label = R.string.Location, value = locationInput, onValueChange = { locationInput = it })
 
-        Column(
-            modifier = Modifier,
-            horizontalAlignment = Alignment.CenterHorizontally
+        Button(
+            onClick = { showPhotoDialog = true },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 16.dp)
         ) {
-            Button(onClick = { navController.navigate("takePhoto") }) {
-                Text(stringResource(R.string.TakePhoto))
-            }
-            Button(onClick = { /* TODO: Implement confirmation logic */ }) {
-                Text(stringResource(R.string.Confirm))
-            }
+            Text(stringResource(R.string.ChoosePhotoBtn))
+        }
+
+        Button(
+            onClick = {
+                // TODO: Implement confirmation logic
+                // This is where you would save all the input data, including the photoUri
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 16.dp)
+        ) {
+            Text(stringResource(R.string.Confirm))
         }
 
         Spacer(modifier = Modifier.height(150.dp))
+    }
+
+    if (showPhotoDialog) {
+        AlertDialog(
+            onDismissRequest = { showPhotoDialog = false },
+            title = { Text("Choose an option") },
+            text = { Text("Would you like to take a new photo or select an existing one?") },
+            confirmButton = {
+                TextButton(onClick = {
+                    showPhotoDialog = false
+                    // You'll need to create a URI for the new photo here
+                    // For simplicity, we're using null, but you should create a proper URI
+                    takePhoto.launch(null)
+                }) {
+                    Text("Take Photo")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    showPhotoDialog = false
+                    pickPhoto.launch("image/*")
+                }) {
+                    Text("Select Photo")
+                }
+            }
+        )
     }
 }
 
@@ -90,9 +149,9 @@ fun VerhurenInputField(label: Int, value: String, onValueChange: (String) -> Uni
     Text(
         text = stringResource(label),
         modifier = Modifier
-            .padding(bottom = 16.dp, top = 10.dp)
+            .padding(bottom = 8.dp, top = 16.dp)
             .fillMaxWidth(),
-        textAlign = TextAlign.Start  // Use textAlign instead of align for Text
+        textAlign = TextAlign.Start
     )
     TextField(
         value = value,
@@ -100,7 +159,7 @@ fun VerhurenInputField(label: Int, value: String, onValueChange: (String) -> Uni
         singleLine = true,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(bottom = 32.dp)
+            .padding(bottom = 16.dp)
     )
 }
 
