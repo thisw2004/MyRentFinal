@@ -79,6 +79,10 @@ class UserViewModel : ViewModel() {
 
     private val api = retrofit.create(MyRentApi::class.java)
 
+
+    fun isLoggedIn(): Boolean {
+        return userSession.value != null
+    }
     fun login(username: String, password: String) {
         viewModelScope.launch {
             _loginState.value = LoginState.Loading

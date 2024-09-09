@@ -124,7 +124,7 @@ fun MyCarsLayout(viewModel: CarViewModel, navController: NavController) {
 @Composable
 fun MyCarsPreview() {
     MyRentAppTheme {
-        MyCarsLayout(CarViewModel(), rememberNavController())
+        MyCarsLayout(CarViewModel(UserViewModel()), rememberNavController())
     }
 }
 

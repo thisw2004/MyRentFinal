@@ -54,6 +54,8 @@
     <string name="Mileage">Mileage</string>
     <string name="Location">Location</string>
     <string name="ChoosePhotoBtn">Choose or take Photo</string>
+    <string name="NoOwnedCars">Currently,you have no owned cars</string>
+    <string name="OwnedCarsTitle">Je gehuurde auto\'s</string>
 
 
 </resources>

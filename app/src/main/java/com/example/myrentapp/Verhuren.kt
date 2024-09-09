@@ -1,13 +1,12 @@
 package com.example.myrentapp
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
-import android.os.Bundle
-import android.provider.OpenableColumns
-import androidx.activity.ComponentActivity
+import android.util.Base64
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -19,43 +18,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
-import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.compose.rememberNavController
-import com.example.myrentapp.ui.theme.MyRentAppTheme
 import androidx.navigation.NavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.isGranted
+import java.io.ByteArrayOutputStream
 import java.io.File
-import java.text.SimpleDateFormat
-import java.util.*
-
-class Verhuren : ComponentActivity() {
-    private lateinit var viewModel: CarViewModel
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        enableEdgeToEdge()
-        super.onCreate(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(CarViewModel::class.java)
-        setContent {
-            MyRentAppTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                ) {
-                    val navController = rememberNavController()
-                    VerhurenFormLayout(viewModel, navController)
-                }
-            }
-        }
-    }
-}
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun VerhurenFormLayout(viewModel: CarViewModel, navController: NavController) {
+fun VerhurenFormLayout(carViewModel: CarViewModel, userViewModel: UserViewModel, navController: NavController) {
+    val context = LocalContext.current
+    val addVehicleState by carViewModel.addVehicleState.collectAsState()
+    val isLoggedIn by remember { derivedStateOf { userViewModel.isLoggedIn() } }
+
     var brandInput by remember { mutableStateOf("") }
     var modelInput by remember { mutableStateOf("") }
     var buildYearInput by remember { mutableStateOf("") }
@@ -68,39 +46,41 @@ fun VerhurenFormLayout(viewModel: CarViewModel, navController: NavController) {
     var showPhotoDialog by remember { mutableStateOf(false) }
     var photoUri by remember { mutableStateOf<Uri?>(null) }
     var photoName by remember { mutableStateOf<String?>(null) }
+    var photoBase64 by remember { mutableStateOf<String?>(null) }
 
-    val context = LocalContext.current
     val cameraPermissionState = rememberPermissionState(android.Manifest.permission.CAMERA)
 
     val takePhoto = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { success ->
         if (success) {
             photoUri?.let { uri ->
-                photoName = getFileNameFromUri(context, uri)
+                photoBase64 = encodeImageToBase64(context, uri)
+                photoName = carViewModel.generatePhotoName(context)
             }
         }
     }
 
     val pickPhoto = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         photoUri = uri
-        uri?.let {
-            photoName = getFileNameFromUri(context, it)
+        if (uri != null) {
+            photoBase64 = encodeImageToBase64(context, uri)
+            photoName = carViewModel.generatePhotoName(context)
         }
     }
 
     Column(
         modifier = Modifier
-            .statusBarsPadding()
-            .padding(horizontal = 40.dp)
-            .verticalScroll(rememberScrollState())
-            .safeDrawingPadding(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+            .fillMaxSize()
+            .padding(16.dp)
+            .verticalScroll(rememberScrollState()),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
             text = stringResource(R.string.hireTitle),
-            style = MaterialTheme.typography.displaySmall,
+            style = MaterialTheme.typography.headlineMedium,
             textAlign = TextAlign.Center
         )
+
+        Spacer(modifier = Modifier.height(16.dp))
 
         VerhurenInputField(label = R.string.brand, value = brandInput, onValueChange = { brandInput = it })
         VerhurenInputField(label = R.string.model, value = modelInput, onValueChange = { modelInput = it })
@@ -122,24 +102,57 @@ fun VerhurenFormLayout(viewModel: CarViewModel, navController: NavController) {
 
         photoName?.let {
             Text(
-                text = "$it uploaded",
+                text = "Photo selected: $it",
                 modifier = Modifier.padding(vertical = 8.dp)
             )
         }
 
         Button(
             onClick = {
-                // TODO: Implement confirmation logic
-                // This is where you would save all the input data, including the photoUri
+                if (isLoggedIn) {
+                    carViewModel.addVehicle(
+                        brandInput,
+                        modelInput,
+                        buildYearInput.toIntOrNull() ?: 0,
+                        kentekenInput,
+                        brandstofInput,
+                        verbruikInput.toIntOrNull() ?: 0,
+                        kmStandInput.toIntOrNull() ?: 0,
+                        locationInput,
+                        photoBase64
+                    )
+                } else {
+                    navController.navigate("login")
+                }
             },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 16.dp)
         ) {
-            Text(stringResource(R.string.Confirm))
+            Text(if (isLoggedIn) stringResource(R.string.Confirm) else "Login to Add Vehicle")
         }
 
-        Spacer(modifier = Modifier.height(150.dp))
+        when (val state = addVehicleState) {
+            is AddVehicleState.Loading -> CircularProgressIndicator()
+            is AddVehicleState.Success -> {
+                Text(
+                    text = state.message,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(vertical = 8.dp)
+                )
+                LaunchedEffect(state) {
+                    navController.popBackStack()
+                }
+            }
+            is AddVehicleState.Error -> {
+                Text(
+                    text = state.message,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(vertical = 8.dp)
+                )
+            }
+            else -> {} // Idle state, do nothing
+        }
     }
 
     if (showPhotoDialog) {
@@ -151,7 +164,7 @@ fun VerhurenFormLayout(viewModel: CarViewModel, navController: NavController) {
                 TextButton(onClick = {
                     showPhotoDialog = false
                     if (cameraPermissionState.status.isGranted) {
-                        photoUri = createImageUri(context)
+                        photoUri = createImageUri(context, carViewModel)
                         takePhoto.launch(photoUri)
                     } else {
                         cameraPermissionState.launchPermissionRequest()
@@ -174,37 +187,21 @@ fun VerhurenFormLayout(viewModel: CarViewModel, navController: NavController) {
 
 @Composable
 fun VerhurenInputField(label: Int, value: String, onValueChange: (String) -> Unit) {
-    Text(
-        text = stringResource(label),
-        modifier = Modifier
-            .padding(bottom = 8.dp, top = 16.dp)
-            .fillMaxWidth(),
-        textAlign = TextAlign.Start
-    )
-    TextField(
+    OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
+        label = { Text(stringResource(label)) },
         singleLine = true,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(bottom = 16.dp)
+            .padding(vertical = 8.dp)
     )
 }
 
-fun createImageUri(context: Context): Uri {
-    val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-    val datePart = dateFormat.format(Date())
-
+fun createImageUri(context: Context, viewModel: CarViewModel): Uri {
+    val photoName = viewModel.generatePhotoName(context)
     val storageDir: File? = context.getExternalFilesDir(android.os.Environment.DIRECTORY_PICTURES)
-    val existingFiles = storageDir?.listFiles { file ->
-        file.name.startsWith(datePart)
-    } ?: emptyArray()
-
-    val sequenceNumber = existingFiles.size + 1
-    val imageFileName = "${datePart}_${sequenceNumber}.jpg"
-
-    val image = File(storageDir, imageFileName)
-
+    val image = File(storageDir, "$photoName.jpg")
     return FileProvider.getUriForFile(
         context,
         "com.example.myrentapp.fileprovider",
@@ -212,30 +209,16 @@ fun createImageUri(context: Context): Uri {
     )
 }
 
-fun getFileNameFromUri(context: Context, uri: Uri): String {
-    var result = "photo"  // Default name
-    if (uri.scheme == "content") {
-        val cursor = context.contentResolver.query(uri, null, null, null, null)
-        cursor?.use {
-            if (it.moveToFirst()) {
-                val displayNameIndex = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-                if (displayNameIndex != -1) {
-                    result = it.getString(displayNameIndex)
-                }
-            }
-        }
-    }
-    if (result == "photo") {
-        // If we couldn't get the name from the content resolver, extract it from the URI
-        result = uri.path?.let { File(it).name } ?: "photo"
-    }
-    return result
-}
-
-@Preview(showBackground = true)
-@Composable
-fun VerhurenFormLayoutPreview() {
-    MyRentAppTheme {
-        VerhurenFormLayout(viewModel = CarViewModel(), navController = rememberNavController())
+fun encodeImageToBase64(context: Context, uri: Uri): String? {
+    return try {
+        val inputStream = context.contentResolver.openInputStream(uri)
+        val bitmap = BitmapFactory.decodeStream(inputStream)
+        val outputStream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+        val byteArray = outputStream.toByteArray()
+        Base64.encodeToString(byteArray, Base64.DEFAULT)
+    } catch (e: Exception) {
+        Log.e("VerhurenFormLayout", "Error encoding image to Base64", e)
+        null
     }
 }
