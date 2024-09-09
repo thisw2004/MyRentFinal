@@ -9,15 +9,18 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelProvider
-import com.example.myrentapp.ui.theme.MyRentAppTheme
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.myrentapp.ui.theme.MyRentAppTheme
 
 class Catalogus : ComponentActivity() {
     private lateinit var carViewModel: CarViewModel
@@ -44,6 +47,12 @@ class Catalogus : ComponentActivity() {
 
 @Composable
 fun CatalogusLayout(viewModel: CarViewModel, navController: NavController) {
+    val availableVehicles by viewModel.availableVehiclesState.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.fetchAvailableVehicles()
+    }
+
     Column(
         modifier = Modifier
             .statusBarsPadding()
@@ -59,24 +68,25 @@ fun CatalogusLayout(viewModel: CarViewModel, navController: NavController) {
             modifier = Modifier.padding(bottom = 30.dp)
         )
 
-        CatalogButton(text = R.string.Car1Txt) { navController.navigate("AvailableCar1") }
-        CatalogButton(text = R.string.Car2Txt) { /* TODO: Implement navigation */ }
-        CatalogButton(text = R.string.Car3Txt) { /* TODO: Implement navigation */ }
-        CatalogButton(text = R.string.Car4Txt) { /* TODO: Implement navigation */ }
+        availableVehicles.forEach { vehicle ->
+            CatalogButton(text = "${vehicle.brand} ${vehicle.model}") {
+                // Handle navigation or actions for each vehicle
+            }
+        }
 
         Spacer(modifier = Modifier.height(150.dp))
     }
 }
 
 @Composable
-fun CatalogButton(text: Int, onClick: () -> Unit) {
+fun CatalogButton(text: String, onClick: () -> Unit) {
     Button(
         onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp)
     ) {
-        Text(stringResource(text))
+        Text(text)
     }
 }
 

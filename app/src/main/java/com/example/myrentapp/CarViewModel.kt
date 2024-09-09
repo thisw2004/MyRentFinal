@@ -15,12 +15,13 @@ import retrofit2.HttpException
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.Body
+import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
+import retrofit2.http.Body
 
 data class AddCarRequest(
     val brand: String,
@@ -30,13 +31,24 @@ data class AddCarRequest(
     val brandstof: String,
     val verbruik: Int,
     val kmstand: Int,
-    val photoId: String?,  // Changed to match the server-side field name
-    val location: String,
-//    val rented: Boolean = false,  // This is fine
-//    val userId: Int?  // Changed to match server-side conventions
+    val photoId: String?,
+    val location: String
 )
-
 data class AddVehicleResponse(val message: String)
+data class VehicleResponse(
+    val id: Int,
+    val rented: Boolean,
+    val userId: Int?,
+    val brand: String,
+    val model: String,
+    val buildYear: Int,
+    val kenteken: String,
+    val brandstof: String,
+    val verbruik: Int,
+    val kmstand: Int,
+    val photoId: String?,
+    val location: String
+)
 
 interface CarApi {
     @POST("vehicles/add")
@@ -44,11 +56,19 @@ interface CarApi {
         @Header("Authorization") token: String,
         @Body carRequest: AddCarRequest
     ): Response<ResponseBody>
+
+    @GET("vehicles/available")
+    suspend fun getAvailableVehicles(
+        @Header("Authorization") token: String
+    ): Response<List<VehicleResponse>>
 }
 
 class CarViewModel(private val userViewModel: UserViewModel) : ViewModel() {
     private val _addVehicleState = MutableStateFlow<AddVehicleState>(AddVehicleState.Idle)
     val addVehicleState: StateFlow<AddVehicleState> = _addVehicleState
+
+    private val _availableVehiclesState = MutableStateFlow<List<VehicleResponse>>(emptyList())
+    val availableVehiclesState: StateFlow<List<VehicleResponse>> = _availableVehiclesState
 
     private val BASE_URL = "https://gb8fw3jh.euw.devtunnels.ms:8080/"
 
@@ -105,10 +125,8 @@ class CarViewModel(private val userViewModel: UserViewModel) : ViewModel() {
                     brandstof = brandstof,
                     verbruik = verbruik,
                     kmstand = kmstand,
-                    photoId = photoBase64,  // Using photoBase64 as photoId
+                    photoId = photoBase64,
                     location = location
-//                    rented = false,  // Default value
-//                    userId = null  // This will be set by the server
                 )
 
                 Log.d("CarViewModel", "Sending request: ${gson.toJson(carRequest)}")
@@ -136,6 +154,32 @@ class CarViewModel(private val userViewModel: UserViewModel) : ViewModel() {
             } catch (e: Exception) {
                 Log.e("CarViewModel", "Exception adding vehicle", e)
                 _addVehicleState.value = AddVehicleState.Error("An unexpected error occurred: ${e.message}")
+            }
+        }
+    }
+
+    fun fetchAvailableVehicles() {
+        viewModelScope.launch {
+            if (!userViewModel.isLoggedIn()) {
+                // Handle not logged in case
+                return@launch
+            }
+
+            try {
+                val token = userViewModel.userSession.value?.token ?: ""
+                val authHeader = "Bearer $token"
+
+                val response = api.getAvailableVehicles(authHeader)
+
+                if (response.isSuccessful) {
+                    response.body()?.let {
+                        _availableVehiclesState.value = it
+                    }
+                } else {
+                    Log.e("CarViewModel", "Failed to fetch available vehicles: ${response.errorBody()?.string()}")
+                }
+            } catch (e: Exception) {
+                Log.e("CarViewModel", "Exception fetching available vehicles", e)
             }
         }
     }
