@@ -51,20 +51,23 @@ class MainActivity : ComponentActivity() {
                         composable("OwnedCar1") {
                             CarViewOwnedCarLayout(carViewModel, navController)
                         }
-                        composable("AvailableCar1") {
-                            CarViewAvailableCarLayout(carViewModel, navController)
+                        composable("AvailableCar1/{carId}") { backStackEntry ->
+                            val carId = backStackEntry.arguments?.getString("carId")
+                            carId?.let {
+                                CarViewAvailableCarLayout(carViewModel, navController, it)
+                            }
                         }
                         composable("verhuren") {
                             VerhurenFormLayout(carViewModel, userViewModel, navController)
                         }
                         composable("huren") {
-                            HurenLayout()//add navcontroller evt
+                            HurenLayout() // Add navController if needed
                         }
                         composable("looproute") {
-                            CalcLooprouteLayout()//add navcontroller evt.
+                            CalcLooprouteLayout() // Add navController if needed
                         }
                         composable("takePhoto") {
-                            MaakFotoLayout()//add navcontroller evt.
+                            MaakFotoLayout() // Add navController if needed
                         }
                         composable("Login") {
                             LoginFormLayout(userViewModel, navController)

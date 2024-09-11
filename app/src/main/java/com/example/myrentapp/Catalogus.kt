@@ -2,9 +2,9 @@ package com.example.myrentapp
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.os.Bundle
 import android.util.Base64
 import androidx.activity.ComponentActivity
+import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
@@ -12,11 +12,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
@@ -79,7 +75,7 @@ fun CatalogusLayout(viewModel: CarViewModel, navController: NavController) {
                 brand = "${vehicle.brand} ${vehicle.model}",
                 photoBase64 = vehicle.photoId,
                 onClick = {
-                    // Handle navigation or actions for each vehicle
+                    navController.navigate("AvailableCar1/${vehicle.id}")  // Use the dynamic route with car ID
                 }
             )
         }

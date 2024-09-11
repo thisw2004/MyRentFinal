@@ -56,6 +56,7 @@
     <string name="ChoosePhotoBtn">Choose or take Photo</string>
     <string name="NoOwnedCars">Currently,you have no owned cars</string>
     <string name="OwnedCarsTitle">Je gehuurde auto\'s</string>
+    <string name="error_loading_car_details">Sorry, we have some trouble at the moment to get the car data,try again later.</string>
 
 
 </resources>
