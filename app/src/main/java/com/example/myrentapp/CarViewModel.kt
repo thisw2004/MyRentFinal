@@ -73,6 +73,11 @@ interface CarApi {
     suspend fun getAvailableVehicles(
         @Header("Authorization") token: String
     ): Response<List<VehicleResponse>>
+
+    @GET("vehicles/myrentedvehicles")
+    suspend fun getMyRentedVehicles(
+        @Header("Authorization") token: String
+    ): Response<List<VehicleResponse>>
 }
 
 open class CarViewModel(private val userViewModel: UserViewModel) : ViewModel() {
@@ -81,6 +86,9 @@ open class CarViewModel(private val userViewModel: UserViewModel) : ViewModel() 
 
     private val _availableVehiclesState = MutableStateFlow<List<VehicleResponse>>(emptyList())
     val availableVehiclesState: StateFlow<List<VehicleResponse>> = _availableVehiclesState
+
+    private val _rentedVehiclesState = MutableStateFlow<List<VehicleResponse>>(emptyList())
+    val rentedVehiclesState: StateFlow<List<VehicleResponse>> = _rentedVehiclesState
 
     private val BASE_URL = "https://gb8fw3jh.euw.devtunnels.ms:8080/"
 
@@ -163,7 +171,7 @@ open class CarViewModel(private val userViewModel: UserViewModel) : ViewModel() 
         }
     }
 
-    fun hireVehicle(carId: String) {
+    fun hireVehicle(carId: String, onSuccess: () -> Unit) {
         viewModelScope.launch {
             if (!userViewModel.isLoggedIn()) {
                 _addVehicleState.value = AddVehicleState.Error("You must be logged in to rent a vehicle.")
@@ -181,6 +189,7 @@ open class CarViewModel(private val userViewModel: UserViewModel) : ViewModel() 
 
                 if (response.isSuccessful) {
                     _addVehicleState.value = AddVehicleState.Success("Car rented successfully")
+                    onSuccess() // Trigger the success callback
                 } else {
                     val errorBody = response.errorBody()?.string() ?: "No error body"
                     Log.e("CarViewModel", "Error renting vehicle. Code: ${response.code()}, Body: $errorBody")
@@ -196,6 +205,7 @@ open class CarViewModel(private val userViewModel: UserViewModel) : ViewModel() 
             }
         }
     }
+
 
     fun addVehicle(
         brand: String,
@@ -249,6 +259,32 @@ open class CarViewModel(private val userViewModel: UserViewModel) : ViewModel() 
             } catch (e: Exception) {
                 Log.e("CarViewModel", "Exception adding vehicle", e)
                 _addVehicleState.value = AddVehicleState.Error("An unexpected error occurred: ${e.message}")
+            }
+        }
+    }
+
+    fun fetchRentedVehicles() {
+        viewModelScope.launch {
+            if (!userViewModel.isLoggedIn()) {
+                // Handle not logged in case
+                return@launch
+            }
+
+            try {
+                val token = userViewModel.userSession.value?.token ?: ""
+                val authHeader = "Bearer $token"
+
+                val response = api.getMyRentedVehicles(authHeader)
+
+                if (response.isSuccessful) {
+                    response.body()?.let {
+                        _rentedVehiclesState.value = it
+                    }
+                } else {
+                    Log.e("CarViewModel", "Failed to fetch rented vehicles: ${response.errorBody()?.string()}")
+                }
+            } catch (e: Exception) {
+                Log.e("CarViewModel", "Exception fetching rented vehicles", e)
             }
         }
     }

@@ -1,4 +1,3 @@
-
 package com.example.myrentapp
 
 import android.os.Bundle
@@ -15,36 +14,24 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.LaunchedEffect // <- Add this import
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.Placeholder
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.myrentapp.ui.theme.MyRentAppTheme
-import java.text.NumberFormat
-//for navigation
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-
-//dit is het main scherm dus hier start de app dus vanuit deze alle andere schermen aanroepen
-//todo: hoe data meegeven aan andere schermen? staat wellicht in developer.google.com manuals
-//veel data moet ook meegegeven worden aan api. >> eerst api werkend krijgen
+import com.example.myrentapp.ui.theme.MyRentAppTheme
 
 class MyCars : ComponentActivity() {
     private val viewModel by lazy {
@@ -59,7 +46,6 @@ class MyCars : ComponentActivity() {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                 ) {
-                    //VerhurenFormLayout()
                     MyCarsLayout(viewModel, rememberNavController())
                 }
             }
@@ -67,58 +53,48 @@ class MyCars : ComponentActivity() {
     }
 }
 
-
 @Composable
 fun MyCarsLayout(viewModel: CarViewModel, navController: NavController) {
-    //alle velden hier toevoegen!
+    // Start fetching rented vehicles when the Composable is first composed
+    LaunchedEffect(Unit) {
+        viewModel.fetchRentedVehicles()
+    }
 
-
+    val rentedVehicles by viewModel.rentedVehiclesState.collectAsState()
 
     Column(
         modifier = Modifier
             .statusBarsPadding()
-            .padding(horizontal = 110.dp)
+            .padding(horizontal = 16.dp)
             .verticalScroll(rememberScrollState())
             .safeDrawingPadding(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        //title
+        // Title
         Text(
             text = stringResource(R.string.MyCarTitle),
             style = MaterialTheme.typography.displaySmall,
-            //placeholder
-
         )
-        //field 1,brand
 
         Spacer(modifier = Modifier.height(30.dp))
 
+        // List of rented cars
         Column(
-            modifier = Modifier,
+            modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            //use navhost here,but how?
-            Button(onClick = {navController.navigate("OwnedCar1")}){
-                Text(stringResource(R.string.Car1Txt))
-            }
-            Button(onClick = { /*TODO*/ }) {
-                Text(stringResource(R.string.Car2Txt))
-            }
-            Button(onClick = {/*TODO*/ }){
-                Text(stringResource(R.string.Car3Txt))
-            }
-            Button(onClick = { /*TODO*/ }) {
-                Text(stringResource(R.string.Car4Txt))
+            rentedVehicles.forEach { vehicle ->
+                Button(onClick = { /* Navigate to detailed view of this car */ }) {
+                    Text(text = "${vehicle.brand} ${vehicle.model} (${vehicle.kenteken})")
+                }
+                Spacer(modifier = Modifier.height(8.dp))
             }
         }
 
         Spacer(modifier = Modifier.height(150.dp))
     }
 }
-
-
-
 
 @Preview(showBackground = true)
 @Composable
@@ -127,4 +103,3 @@ fun MyCarsPreview() {
         MyCarsLayout(CarViewModel(UserViewModel()), rememberNavController())
     }
 }
-

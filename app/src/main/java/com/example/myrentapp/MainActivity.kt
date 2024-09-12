@@ -61,7 +61,7 @@ class MainActivity : ComponentActivity() {
                             VerhurenFormLayout(carViewModel, userViewModel, navController)
                         }
                         composable("huren") {
-                            HurenLayout() // Add navController if needed
+                            HurenLayout(carViewModel, navController) // Added navController and carViewModel
                         }
                         composable("looproute") {
                             CalcLooprouteLayout() // Add navController if needed

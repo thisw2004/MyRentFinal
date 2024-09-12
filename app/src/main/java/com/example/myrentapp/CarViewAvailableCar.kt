@@ -79,7 +79,10 @@ fun CarViewAvailableCarLayout(viewModel: CarViewModel, navController: NavControl
 
                 Button(
                     onClick = {
-                        viewModel.hireVehicle(carId)
+                        viewModel.hireVehicle(carId) {
+                            // This block is the onSuccess callback
+                            navController.navigate("myCars") // Navigate to "My Cars" screen on success
+                        }
                     }
                 ) {
                     Text(stringResource(R.string.HireCar))

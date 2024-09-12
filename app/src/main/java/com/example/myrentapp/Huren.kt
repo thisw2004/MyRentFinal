@@ -1,4 +1,3 @@
-
 package com.example.myrentapp
 
 import android.os.Bundle
@@ -30,16 +29,22 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.Placeholder
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.myrentapp.ui.theme.MyRentAppTheme
-import java.text.NumberFormat
-//dit is het main scherm dus hier start de app dus vanuit deze alle andere schermen aanroepen
-//todo: hoe data meegeven aan andere schermen? staat wellicht in developer.google.com manuals
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.LaunchedEffect
 
 class Huren : ComponentActivity() {
+    private val viewModel by lazy {
+        ViewModelProvider(this).get(CarViewModel::class.java)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
@@ -48,7 +53,7 @@ class Huren : ComponentActivity() {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                 ) {
-                    HurenLayout()
+                    HurenLayout(viewModel, rememberNavController())
                 }
             }
         }
@@ -56,8 +61,9 @@ class Huren : ComponentActivity() {
 }
 
 @Composable
-fun HurenLayout() {
+fun HurenLayout(viewModel: CarViewModel, navController: NavController) {
 
+    val addVehicleState by viewModel.addVehicleState.collectAsState()
 
     Column(
         modifier = Modifier
@@ -68,88 +74,72 @@ fun HurenLayout() {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        //title
+        // Title
         Text(
             text = stringResource(R.string.titleHuren),
             style = MaterialTheme.typography.displaySmall,
-            //placeholder
-
         )
-        //field 1,brand
-        Text(
-            //todo:nog check of rijbewijs geldig is.
-            //gwn check mark erachter als rijbewijs geldig is en anders melding net boven button dat rijbewijs niet geldig is en kan niet huren.
-            //check met data uit api
 
+        // License validity and car data (placeholder text here)
+        Text(
             text = stringResource(R.string.LicenseValid),
             modifier = Modifier
                 .padding(bottom = 16.dp, top = 10.dp)
                 .align(alignment = Alignment.Start)
         )
         Text(
-
             text = stringResource(R.string.MyRentedCarData),
             modifier = Modifier
                 .padding(bottom = 16.dp, top = 10.dp)
                 .align(alignment = Alignment.Start)
         )
         TextField(
-            //TODO: dit in strings gooien.
-            //TODO: data die uit api wordt gehaald.
-            //evt add artikelnummer en nog diverse dingen? : zie word doc
             value = "Merk: \nModel: \nBouwjaar: \nKenteken: \nBrandstoftype: ",
             onValueChange = { /* No-op. Read-only text field. */ },
             modifier = Modifier.fillMaxSize(),
-            //hieronder placeholder maar is niet nodig in dit geval
-            //label = { Text("Label") },
             singleLine = false,
             enabled = false
         )
 
-
         Spacer(modifier = Modifier.height(15.dp))
 
-
-
-        //button for confirming the form and button for taking a photo
-        Column(
-            modifier = Modifier,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-
-            Button(onClick = { /*TODO*/ }) {
-                Text(stringResource(R.string.ConfirmHuren))
+        // Button for confirming the rental
+        Button(onClick = {
+            // Assuming the car ID is "1" for this example
+            val carId = "1"
+            viewModel.hireVehicle(carId) {
+                // On success, navigate to "My Cars" page
+                navController.navigate("myCars")
             }
-            //hierna naar mijn auto's gaan en de gehuurde en verhuurde auto's showen
+        }) {
+            Text(stringResource(R.string.ConfirmHuren))
+        }
+
+        // Display success, loading, or error messages based on the state
+        when (addVehicleState) {
+            is AddVehicleState.Loading -> {
+                Text("Processing...")
+            }
+            is AddVehicleState.Success -> {
+                Text((addVehicleState as AddVehicleState.Success).message)
+                // Navigation happens on success callback, so no need to handle it here
+            }
+            is AddVehicleState.Error -> {
+                Text((addVehicleState as AddVehicleState.Error).message)
+            }
+            else -> {
+                // Idle state, do nothing
+            }
         }
 
         Spacer(modifier = Modifier.height(150.dp))
     }
 }
 
-@Composable
-fun EditFieldHuren(
-    value: String,
-    onValueChanged: (String) -> Unit,
-    modifier: Modifier
-) {
-    TextField(
-        value = value,
-        singleLine = true,
-        modifier = modifier,
-        onValueChange = onValueChanged,
-        //label hieronder is placeholder maar toont nu dezelfde in alle velden,TODO: deze nog splitsen
-        //label = { Text(stringResource(R.string.brand)) },
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-    )
-}
-
-
 @Preview(showBackground = true)
 @Composable
 fun HurenLayoutPreview() {
     MyRentAppTheme {
-        HurenLayout()
+        HurenLayout(viewModel = CarViewModel(UserViewModel()), navController = rememberNavController())
     }
 }
-
