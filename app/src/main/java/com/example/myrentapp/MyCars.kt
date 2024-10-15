@@ -85,7 +85,8 @@ fun MyCarsLayout(viewModel: CarViewModel, navController: NavController) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             rentedVehicles.forEach { vehicle ->
-                Button(onClick = { /* Navigate to detailed view of this car */ }) {
+                //TODO:: fix this navigation, show all details and looproute
+                Button(onClick = { }) {
                     Text(text = "${vehicle.brand} ${vehicle.model} (${vehicle.kenteken})")
                 }
                 Spacer(modifier = Modifier.height(8.dp))
