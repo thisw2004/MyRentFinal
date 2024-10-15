@@ -255,14 +255,18 @@ fun decodeUriToBitmap(context: Context, uri: Uri): Bitmap? {
 // Get current GPS location function
 fun getCurrentLocation(context: Context, onLocationReceived: (String) -> Unit) {
     val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+
+    // Request fine location (precise GPS-based location)
     if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PermissionChecker.PERMISSION_GRANTED) {
+
+        // Use GPS as the best provider for high accuracy
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0L, 0f, object : LocationListener {
             override fun onLocationChanged(location: Location) {
                 val latitude = location.latitude
                 val longitude = location.longitude
                 val gpsCoordinates = "$latitude,$longitude"
-                onLocationReceived(gpsCoordinates)  // Pass location to the callback
-                locationManager.removeUpdates(this)  // Stop receiving updates after the first one
+                onLocationReceived(gpsCoordinates)  // Pass precise location to the callback
+                locationManager.removeUpdates(this)  // Stop updates after the first location is received
             }
 
             override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {}
