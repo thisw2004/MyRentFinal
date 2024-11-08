@@ -17,16 +17,16 @@ import androidx.navigation.compose.rememberNavController
 import com.example.myrentapp.ui.theme.MyRentAppTheme
 
 class MainActivity : ComponentActivity() {
-    private lateinit var userViewModel: UserViewModel
-    private lateinit var carViewModel: CarViewModel
+    private val userViewModel: UserViewModel by lazy {
+        ViewModelProvider(this).get(UserViewModel::class.java)
+    }
+    private val carViewModel: CarViewModel by lazy {
+        ViewModelProvider(this, CarViewModelFactory(userViewModel)).get(CarViewModel::class.java)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
-
-        // Initialize ViewModels
-        userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
-        carViewModel = ViewModelProvider(this, CarViewModelFactory(userViewModel)).get(CarViewModel::class.java)
 
         setContent {
             MyRentAppTheme {
@@ -55,20 +55,20 @@ class MainActivity : ComponentActivity() {
                         composable("AvailableCar1/{carId}") { backStackEntry ->
                             val carId = backStackEntry.arguments?.getString("carId")
                             carId?.let {
-                                CarViewAvailableCarLayout(carViewModel, navController, it)
+                                CarDetailsLayout(carViewModel, navController, it)
                             }
                         }
                         composable("verhuren") {
                             VerhurenFormLayout(carViewModel, userViewModel, navController)
                         }
                         composable("huren") {
-                            HurenLayout(carViewModel, navController) // Added navController and carViewModel
+                            HurenLayout(carViewModel, navController)
                         }
                         composable("looproute") {
-                            CalcLooprouteLayout() // Add navController if needed
+                            CalcLooprouteLayout()
                         }
                         composable("takePhoto") {
-                            MaakFotoLayout() // Add navController if needed
+                            MaakFotoLayout()
                         }
                         composable("Login") {
                             LoginFormLayout(userViewModel, navController)

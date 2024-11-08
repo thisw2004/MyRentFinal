@@ -1,9 +1,10 @@
 package com.example.myrentapp
 
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.util.Base64
+import android.util.Log
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -11,125 +12,170 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.myrentapp.ui.theme.MyRentAppTheme
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.MapView
+import com.google.android.gms.maps.MapsInitializer
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
+import androidx.compose.ui.viewinterop.AndroidView
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
-class CarViewAvailableCar : ComponentActivity() {
-    private lateinit var carViewModel: CarViewModel
+@Composable
+fun CarDetailsLayout(carViewModel: CarViewModel, navController: NavController, carId: String) {
+    val vehicleState by carViewModel.getVehicleById(carId).collectAsState(initial = VehicleState.Loading)
+    val context = LocalContext.current
+    var photoBitmap by remember { mutableStateOf<Bitmap?>(null) }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        enableEdgeToEdge()
-        super.onCreate(savedInstanceState)
+    LaunchedEffect(vehicleState) {
+        if (vehicleState is VehicleState.Success) {
+            val vehicle = (vehicleState as VehicleState.Success).vehicle
+            vehicle.photoId?.let {
+                photoBitmap = decodeBase64ToBitmap(it)
+            }
+        }
+    }
 
-        // Initialize CarViewModel
-        carViewModel = ViewModelProvider(this).get(CarViewModel::class.java)
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+            .verticalScroll(rememberScrollState()),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        when (vehicleState) {
+            is VehicleState.Loading -> {
+                CircularProgressIndicator()
+            }
+            is VehicleState.Success -> {
+                val vehicle = (vehicleState as VehicleState.Success).vehicle
+                Text(
+                    text = "${vehicle.brand} ${vehicle.model}",
+                    style = MaterialTheme.typography.headlineMedium,
+                    modifier = Modifier.fillMaxWidth()
+                )
 
-        setContent {
-            MyRentAppTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    CarViewAvailableCarLayout(carViewModel, rememberNavController(), carId = "123") // Replace with actual carId in production
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Show photo preview if available
+                photoBitmap?.let {
+                    Image(
+                        bitmap = it.asImageBitmap(),
+                        contentDescription = "Car Photo",
+                        modifier = Modifier.size(200.dp)
+                    )
                 }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Display vehicle details
+                Text(
+                    text = "Build Year: ${vehicle.buildYear}\n" +
+                            "License Plate: ${vehicle.kenteken}\n" +
+                            "Fuel Type: ${vehicle.brandstof}\n" +
+                            "Usage: ${vehicle.verbruik} L/100km\n" +
+                            "Mileage: ${vehicle.kmstand} km",
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Display location on the map if available
+                vehicle.location.split(",").let { coordinates ->
+                    if (coordinates.size == 2) {
+                        val lat = coordinates[0].toDoubleOrNull()
+                        val lng = coordinates[1].toDoubleOrNull()
+                        if (lat != null && lng != null) {
+                            GoogleMapView(LatLng(lat, lng))
+                        }
+                    }
+                }
+            }
+            is VehicleState.Error -> {
+                Text(
+                    text = (vehicleState as VehicleState.Error).message,
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodyMedium
+                )
             }
         }
     }
 }
 
 @Composable
-fun CarViewAvailableCarLayout(viewModel: CarViewModel, navController: NavController, carId: String) {
-    val vehicleState by viewModel.getVehicleById(carId).collectAsState()
+fun GoogleMapView(location: LatLng) {
+    val context = LocalContext.current
+    val mapView = remember { MapView(context) }
 
-    Column(
-        modifier = Modifier
-            .statusBarsPadding()
-            .padding(horizontal = 40.dp)
-            .verticalScroll(rememberScrollState())
-            .safeDrawingPadding(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        when (val state = vehicleState) {
-            is VehicleState.Loading -> {
-                CircularProgressIndicator()
-            }
-            is VehicleState.Success -> {
-                val car = state.vehicle
-                Text(
-                    text = car.model,
-                    style = MaterialTheme.typography.displaySmall,
-                )
-
-                TextField(
-                    value = "Merk: ${car.brand}\nModel: ${car.model}\nBouwjaar: ${car.buildYear}\nKenteken: ${car.kenteken}\nBrandstoftype: ${car.brandstof}",
-                    onValueChange = { /* No-op. Read-only text field. */ },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = false,
-                    enabled = false
-                )
-
-                Spacer(modifier = Modifier.height(15.dp))
-
-                Button(
-                    onClick = {
-                        viewModel.hireVehicle(carId) {
-                            // This block is the onSuccess callback
-                            navController.navigate("myCars") // Navigate to "My Cars" screen on success
-                        }
-                    }
-                ) {
-                    Text(stringResource(R.string.HireCar))
-                }
-            }
-            is VehicleState.Error -> {
-                Text(
-                    text = state.message,
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodyLarge
-                )
-            }
+    DisposableEffect(mapView) {
+        mapView.onCreate(null)
+        mapView.onResume()
+        mapView.getMapAsync { googleMap ->
+            MapsInitializer.initialize(context)
+            googleMap.addMarker(MarkerOptions().position(location).title("Car Location"))
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 14f))
         }
+        onDispose {
+            mapView.onPause()
+            mapView.onDestroy()
+        }
+    }
 
-        Spacer(modifier = Modifier.height(150.dp))
+    AndroidView(
+        factory = { mapView },
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(300.dp)
+    )
+}
+
+// Decode Base64 string to Bitmap
+fun decodeBase64ToBitmap(base64Str: String): Bitmap? {
+    return try {
+        val decodedBytes = Base64.decode(base64Str, Base64.DEFAULT)
+        BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
+    } catch (e: Exception) {
+        Log.e("CarDetailsLayout", "Error decoding Base64 string to Bitmap", e)
+        null
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun CarViewAvailableCarPreview() {
-    MyRentAppTheme {
-        // Create a dummy CarViewModel for preview
-        val dummyViewModel = object : CarViewModel(UserViewModel()) {
-            override fun getVehicleById(carId: String) = MutableStateFlow(
+fun CarDetailsLayoutPreview() {
+    val dummyViewModel = object : CarViewModel(UserViewModel()) {
+        override fun getVehicleById(carId: String): StateFlow<VehicleState> {
+            return MutableStateFlow(
                 VehicleState.Success(
                     VehicleResponse(
-                        id = 1,
-                        rented = false,
+                        id = 85,
+                        rented = true,
                         userId = null,
                         brand = "Toyota",
-                        model = "Corolla",
-                        buildYear = 2022,
-                        kenteken = "ABC-123",
-                        brandstof = "Gasoline",
-                        verbruik = 5,
-                        kmstand = 10000,
-                        photoId = null,
-                        location = "Amsterdam"
+                        model = "Sedan 3",
+                        buildYear = 2019,
+                        kenteken = "FC21-IZC",
+                        brandstof = "Hybrid",
+                        verbruik = 10,
+                        kmstand = 22726,
+                        photoId = "iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAIAAACzY+a1AAABcUlEQVR4Xu3RMQ0AMAzAsO4Yf2bFNABDYCmSr7yZuye0+VMsLeS1kNdCXgt5LeS1kNdCXgt5LeS1kNdCXgt5LeS1kNdCXgt5LeS1kNdCXgt5LeS1kNdCXgt5LeS1kNdCXgt5LeS1kNdCXgt5LeS1kNdCXgt5LeS1kNdCXgt5LeS1kNdCXgt5LeS1kNdCXgt5LeS1kNdCXgt5LeS1kNdCXgt5LeS1kNdCXgt5LeS1kNdCXgt5LeS1kNdCXgt5LeS1kNdCXgt5LeS1kNdCXgt5LeS1kNdCXgt5LeS1kNdCXgt5LeS1kNdCXgt5LeS1kNdCXgt5LeS1kNdCXgt5LeS1kNdCXgt5LeS1kNdCXgt5LeS1kNdCXgt5LeS1kNdCXgt5LeS1kNdCXgt5LeS1kNdCXgt5LeS1kNdCXgt5LeS1kNdCXgt5DymvzQlSn0VTAAAAAElFTkSuQmCC",
+                        location = "55.7558,37.6173"
                     )
                 )
             )
         }
-
-        // Use a dummy NavController for preview
-        val dummyNavController = rememberNavController()
-
-        CarViewAvailableCarLayout(dummyViewModel, dummyNavController, carId = "1")
+    }
+    MyRentAppTheme {
+        CarDetailsLayout(dummyViewModel, rememberNavController(), carId = "85")
     }
 }
