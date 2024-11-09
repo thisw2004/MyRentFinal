@@ -58,6 +58,19 @@ class MainActivity : ComponentActivity() {
                                 CarDetailsLayout(carViewModel, navController, it)
                             }
                         }
+                        composable("carViewOwnedCar/{carId}") { backStackEntry ->
+                            val carId = backStackEntry.arguments?.getString("carId")
+                            carId?.let {
+                                CarDetailsLayout(carViewModel, navController, it)
+                            }
+                        }
+
+
+
+
+//                        composable("carViewOwnedCar") {
+//                            CarViewOwnedCarLayout(carViewModel, navController)
+//                        }
                         composable("verhuren") {
                             VerhurenFormLayout(carViewModel, userViewModel, navController)
                         }
