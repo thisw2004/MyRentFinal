@@ -3,6 +3,7 @@ package com.example.myrentapp
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -13,14 +14,24 @@ import androidx.navigation.compose.rememberNavController
 
 @Composable
 fun HomeScreenLayout(sharedViewModel: UserViewModel, navController: NavController) {
+    val userSessionState = sharedViewModel.userSession.collectAsState()
+    val username = userSessionState.value?.username ?: "User"
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        // Display username with a "Home" subtitle
         Text(
             text = "Home",
+            style = MaterialTheme.typography.bodyMedium,
+            fontWeight = FontWeight.Light,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+        Text(
+            text = "Welcome, $username",
             style = MaterialTheme.typography.headlineLarge,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(bottom = 32.dp)
@@ -60,6 +71,7 @@ fun HomeScreenLayout(sharedViewModel: UserViewModel, navController: NavControlle
         Button(
             onClick = {
                 // Implement logout logic here
+                sharedViewModel.logout()
                 navController.navigate("mymainscreen") {
                     popUpTo("mymainscreen") { inclusive = true }
                 }
