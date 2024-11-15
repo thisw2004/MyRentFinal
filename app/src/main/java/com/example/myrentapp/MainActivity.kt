@@ -55,7 +55,7 @@ class MainActivity : ComponentActivity() {
                         composable("AvailableCar1/{carId}") { backStackEntry ->
                             val carId = backStackEntry.arguments?.getString("carId")
                             carId?.let {
-                                CarDetailsLayout(carViewModel, navController, it)
+                                CarDetailsWithHireLayout(carViewModel, navController,it)
                             }
                         }
                         composable("carViewOwnedCar/{carId}") { backStackEntry ->
@@ -64,9 +64,6 @@ class MainActivity : ComponentActivity() {
                                 CarDetailsLayout(carViewModel, navController, it)
                             }
                         }
-
-
-
 
 //                        composable("carViewOwnedCar") {
 //                            CarViewOwnedCarLayout(carViewModel, navController)

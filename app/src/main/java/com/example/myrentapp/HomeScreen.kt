@@ -54,7 +54,7 @@ fun HomeScreenLayout(sharedViewModel: UserViewModel, navController: NavControlle
                 .fillMaxWidth()
                 .padding(bottom = 16.dp)
         ) {
-            Text("My cars")
+            Text("My hired cars")
         }
 
         Button(

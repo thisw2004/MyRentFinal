@@ -30,7 +30,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 @Composable
-fun CarDetailsLayout(carViewModel: CarViewModel, navController: NavController, carId: String) {
+fun CarDetailsWithHireLayout(carViewModel: CarViewModel, navController: NavController, carId: String) {
     val vehicleState by carViewModel.getVehicleById(carId).collectAsState(initial = VehicleState.Loading)
     val context = LocalContext.current
     var photoBitmap by remember { mutableStateOf<Bitmap?>(null) }
@@ -39,7 +39,7 @@ fun CarDetailsLayout(carViewModel: CarViewModel, navController: NavController, c
         if (vehicleState is VehicleState.Success) {
             val vehicle = (vehicleState as VehicleState.Success).vehicle
             vehicle.photoId?.let {
-                photoBitmap = decodeBase64ToBitmap(it)
+                photoBitmap = decodeBase64ToBitmapHire(it)
             }
         }
     }
@@ -107,7 +107,7 @@ fun CarDetailsLayout(carViewModel: CarViewModel, navController: NavController, c
                         val lat = coordinates[0].toDoubleOrNull()
                         val lng = coordinates[1].toDoubleOrNull()
                         if (lat != null && lng != null) {
-                            GoogleMapView(LatLng(lat, lng))
+                            GoogleMapViewHire(LatLng(lat, lng))
                         }
                     }
                 }
@@ -124,7 +124,7 @@ fun CarDetailsLayout(carViewModel: CarViewModel, navController: NavController, c
 }
 
 @Composable
-fun GoogleMapView(location: LatLng) {
+fun GoogleMapViewHire(location: LatLng) {
     val context = LocalContext.current
     val mapView = remember { MapView(context) }
 
@@ -151,19 +151,19 @@ fun GoogleMapView(location: LatLng) {
 }
 
 // Decode Base64 string to Bitmap
-fun decodeBase64ToBitmap(base64Str: String): Bitmap? {
+fun decodeBase64ToBitmapHire(base64Str: String): Bitmap? {
     return try {
         val decodedBytes = Base64.decode(base64Str, Base64.DEFAULT)
         BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
     } catch (e: Exception) {
-        Log.e("CarDetailsLayout", "Error decoding Base64 string to Bitmap", e)
+        Log.e("CarDetailsWithHireLayout", "Error decoding Base64 string to Bitmap", e)
         null
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun CarDetailsLayoutPreview() {
+fun CarDetailsWithHireWithHireLayoutPreview() {
     val dummyViewModel = object : CarViewModel(UserViewModel()) {
         override fun getVehicleById(carId: String): StateFlow<VehicleState> {
             return MutableStateFlow(
@@ -187,6 +187,6 @@ fun CarDetailsLayoutPreview() {
         }
     }
     MyRentAppTheme {
-        CarDetailsLayout(dummyViewModel, rememberNavController(), carId = "85")
+        CarDetailsWithHireLayout(dummyViewModel, rememberNavController(), carId = "85")
     }
 }
