@@ -1,106 +1,236 @@
 package com.example.myrentapp
 
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.util.Base64
+import android.util.Log
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModelProvider
-import com.example.myrentapp.ui.theme.MyRentAppTheme
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import androidx.compose.ui.viewinterop.AndroidView
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.MapView
+import com.google.android.gms.maps.MapsInitializer
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
+import com.example.myrentapp.ui.theme.MyRentAppTheme
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
-class CarViewOwnedCar : ComponentActivity() {
-    private lateinit var carViewModel: CarViewModel
-    private lateinit var userViewModel: UserViewModel
+@Composable
+fun CarViewOwnedCar(carViewModel: CarViewModel, navController: NavController, carId: String) {
+    val vehicleState by carViewModel.getVehicleById(carId).collectAsState(initial = VehicleState.Loading)
+    var photoBitmap by remember { mutableStateOf<Bitmap?>(null) }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        enableEdgeToEdge()
-        super.onCreate(savedInstanceState)
-
-        userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
-        carViewModel = ViewModelProvider(this, CarViewModelFactory(userViewModel))
-            .get(CarViewModel::class.java)
-
-        setContent {
-            MyRentAppTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    CarViewOwnedCarLayout(carViewModel, rememberNavController())
-                }
+    LaunchedEffect(vehicleState) {
+        if (vehicleState is VehicleState.Success) {
+            val vehicle = (vehicleState as VehicleState.Success).vehicle
+            vehicle.photoId?.let {
+                photoBitmap = decodeBase64ToBitmap(it)
             }
         }
     }
-}
 
-@Composable
-fun CarViewOwnedCarLayout(viewModel: CarViewModel, navController: NavController) {
+    val backgroundColor = Color(0xFF1A1D1E) // Dark background color
+    val accentColor = Color(0xFF4AC0FF) // Light blue accent color
+    val textColor = Color(0xFFB0BEC5) // Light grey color for text
+
     Column(
         modifier = Modifier
-            .statusBarsPadding()
-            .padding(horizontal = 16.dp)
-            .fillMaxSize(),
+            .fillMaxSize()
+            .background(backgroundColor)
+            .padding(16.dp)
+            .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            text = stringResource(R.string.OwnedCarsTitle),
-            style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier.padding(vertical = 16.dp)
-        )
+        when (vehicleState) {
+            is VehicleState.Loading -> {
+                CircularProgressIndicator(color = accentColor)
+            }
+            is VehicleState.Success -> {
+                val vehicle = (vehicleState as VehicleState.Success).vehicle
 
-        // Placeholder for the list of owned cars
-        // You'll need to implement this based on your CarViewModel's structure
-        LazyColumn {
-            items(5) { index ->
-                CarItem("Car $index") {
-                    // Navigate to car details screen
-                    // navController.navigate("carDetails/$index")
+                Spacer(modifier = Modifier.height(30.dp)) // Add space to move the title down
+                Text(
+                    text = "${vehicle.brand} ${vehicle.model}",
+                    style = MaterialTheme.typography.headlineMedium.copy(
+                        color = accentColor,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 28.sp
+                    ),
+                    modifier = Modifier.align(Alignment.CenterHorizontally) // Center the title text
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Show photo preview if available
+                photoBitmap?.let {
+                    Image(
+                        bitmap = it.asImageBitmap(),
+                        contentDescription = "Car Photo",
+                        modifier = Modifier
+                            .size(250.dp)
+                            .clip(RoundedCornerShape(10.dp))
+                            .padding(bottom = 15.dp)
+                    )
                 }
+
+                Text(
+                    text = "Car Details:",
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        color = accentColor,
+                        fontWeight = FontWeight.SemiBold
+                    ),
+                    modifier = Modifier
+                        .align(Alignment.Start)
+                )
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 16.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFF2E3135)),
+                    shape = RoundedCornerShape(10.dp),
+                    elevation = CardDefaults.cardElevation(4.dp)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp),
+                        horizontalAlignment = Alignment.Start
+                    ) {
+                        Text(
+                            text = "Build Year: ${vehicle.buildYear}",
+                            style = MaterialTheme.typography.bodyLarge.copy(color = textColor),
+                            modifier = Modifier.padding(bottom = 4.dp)
+                        )
+                        Text(
+                            text = "License Plate: ${vehicle.kenteken}",
+                            style = MaterialTheme.typography.bodyLarge.copy(color = textColor),
+                            modifier = Modifier.padding(bottom = 4.dp)
+                        )
+                        Text(
+                            text = "Fuel Type: ${vehicle.brandstof}",
+                            style = MaterialTheme.typography.bodyLarge.copy(color = textColor),
+                            modifier = Modifier.padding(bottom = 4.dp)
+                        )
+                        Text(
+                            text = "Usage: ${vehicle.verbruik} L/100km",
+                            style = MaterialTheme.typography.bodyLarge.copy(color = textColor),
+                            modifier = Modifier.padding(bottom = 4.dp)
+                        )
+                        Text(
+                            text = "Mileage: ${vehicle.kmstand} km",
+                            style = MaterialTheme.typography.bodyLarge.copy(color = textColor),
+                            modifier = Modifier.padding(bottom = 4.dp)
+                        )
+                    }
+                }
+
+                // Display location on the map if available
+                vehicle.location.split(",").let { coordinates ->
+                    if (coordinates.size == 2) {
+                        val lat = coordinates[0].toDoubleOrNull()
+                        val lng = coordinates[1].toDoubleOrNull()
+                        if (lat != null && lng != null) {
+                            GoogleMapViewCarDetails(LatLng(lat, lng))
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(30.dp))
+            }
+            is VehicleState.Error -> {
+                Text(
+                    text = (vehicleState as VehicleState.Error).message,
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodyMedium
+                )
             }
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CarItem(carName: String, onItemClick: () -> Unit) {
-    Card(
+fun GoogleMapViewCarDetails(location: LatLng) {
+    val context = LocalContext.current
+    val mapView = remember { MapView(context) }
+
+    DisposableEffect(mapView) {
+        mapView.onCreate(null)
+        mapView.onResume()
+        mapView.getMapAsync { googleMap ->
+            MapsInitializer.initialize(context)
+            googleMap.addMarker(MarkerOptions().position(location).title("Car Location"))
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 14f))
+        }
+        onDispose {
+            mapView.onPause()
+            mapView.onDestroy()
+        }
+    }
+
+    AndroidView(
+        factory = { mapView },
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp),
-        onClick = onItemClick
-    ) {
-        Row(
-            modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = carName,
-                style = MaterialTheme.typography.titleMedium
-            )
-        }
+            .height(300.dp)
+            .clip(RoundedCornerShape(15.dp))
+            .padding(bottom = 16.dp)
+    )
+}
+
+// Decode Base64 string to Bitmap
+fun decodeBase64ToBitmap(base64Str: String): Bitmap? {
+    return try {
+        val decodedBytes = Base64.decode(base64Str, Base64.DEFAULT)
+        BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
+    } catch (e: Exception) {
+        Log.e("CarViewOwnedCar", "Error decoding Base64 string to Bitmap", e)
+        null
     }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun CarViewOwnedCarPreview() {
+    val dummyViewModel = object : CarViewModel(UserViewModel()) {
+        override fun getVehicleById(carId: String): StateFlow<VehicleState> {
+            return MutableStateFlow(
+                VehicleState.Success(
+                    VehicleResponse(
+                        id = 85,
+                        rented = true,
+                        userId = null,
+                        brand = "Toyota",
+                        model = "Sedan 3",
+                        buildYear = 2019,
+                        kenteken = "FC21-IZC",
+                        brandstof = "Hybrid",
+                        verbruik = 10,
+                        kmstand = 22726,
+                        photoId = "iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAIAAACzY+a1AAABcUlEQVR4Xu3RMQ0AMAzAsO4Yf2bFNABDYCmSr7yZuye0+VMsLeS1kNdCXgt5LeS1kNdCXgt5LeS1kNdCXgt5LeS1kNdCXgt5LeS1kNdCXgt5LeS1kNdCXgt5LeS1kNdCXgt5LeS1kNdCXgt5LeS1kNdCXgt5LeS1kNdCXgt5LeS1kNdCXgt5LeS1kNdCXgt5LeS1kNdCXgt5LeS1kNdCXgt5LeS1kNdCXgt5LeS1kNdCXgt5LeS1kNdCXgt5LeS1kNdCXgt5LeS1kNdCXgt5LeS1kNdCXgt5LeS1kNdCXgt5LeS1kNdCXgt5LeS1kNdCXgt5LeS1kNdCXgt5LeS1kNdCXgt5LeS1kNdCXgt5LeS1kNdCXgt5LeS1kNdCXgt5LeS1kNdCXgt5DymvzQlSn0VTAAAAAElFTkSuQmCC",
+                        location = "55.7558,37.6173"
+                    )
+                )
+            )
+        }
+    }
     MyRentAppTheme {
-        // Create a dummy CarViewModel for preview
-        val dummyViewModel = CarViewModel(UserViewModel())
-        CarViewOwnedCarLayout(dummyViewModel, rememberNavController())
+        CarViewOwnedCar(dummyViewModel, rememberNavController(), carId = "85")
     }
 }
