@@ -74,12 +74,7 @@ class MainActivity : ComponentActivity() {
                         composable("huren") {
                             HurenLayout(carViewModel, navController)
                         }
-                        composable("looproute") {
-                            CalcLooprouteLayout()
-                        }
-                        composable("takePhoto") {
-                            MaakFotoLayout()
-                        }
+
                         composable("Login") {
                             LoginFormLayout(userViewModel, navController)
                         }
