@@ -1,3 +1,5 @@
+package com.example.myrentapp
+
 import android.Manifest
 import android.content.Context
 import android.graphics.Bitmap
@@ -12,26 +14,29 @@ import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.content.PermissionChecker
 import androidx.navigation.NavController
-import com.example.myrentapp.AddVehicleState
-import com.example.myrentapp.CarViewModel
-import com.example.myrentapp.R
-import com.example.myrentapp.UserViewModel
+import com.example.myrentapp.ui.theme.MyRentAppTheme
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
@@ -53,48 +58,44 @@ fun VerhurenFormLayout(carViewModel: CarViewModel, userViewModel: UserViewModel,
     var brandstofInput by remember { mutableStateOf("") }
     var verbruikInput by remember { mutableStateOf("") }
     var kmStandInput by remember { mutableStateOf("") }
-    var location by remember { mutableStateOf<String?>(null) }  // Auto GPS location
+    var location by remember { mutableStateOf<String?>(null) }
 
     var showPhotoDialog by remember { mutableStateOf(false) }
     var photoUri by remember { mutableStateOf<Uri?>(null) }
     var photoName by remember { mutableStateOf<String?>(null) }
     var photoBase64 by remember { mutableStateOf<String?>(null) }
-    var photoBitmap by remember { mutableStateOf<Bitmap?>(null) }  // For preview
+    var photoBitmap by remember { mutableStateOf<Bitmap?>(null) }
 
-    // Permission states for location and camera
     val locationPermissionState = rememberPermissionState(Manifest.permission.ACCESS_FINE_LOCATION)
     val cameraPermissionState = rememberPermissionState(Manifest.permission.CAMERA)
 
-    // Launcher for taking a photo
     val takePhoto = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { success ->
         if (success) {
             photoUri?.let { uri ->
                 photoBase64 = encodeImageToBase64(context, uri)
                 val bitmap = decodeUriToBitmap(context, uri)
-                photoBitmap = bitmap  // Set photo preview bitmap
+                photoBitmap = bitmap
                 photoName = carViewModel.generatePhotoName(context)
             }
         }
     }
 
-    // Launcher for picking a photo from the gallery
     val pickPhoto = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         photoUri = uri
         if (uri != null) {
             photoBase64 = encodeImageToBase64(context, uri)
             val bitmap = decodeUriToBitmap(context, uri)
-            photoBitmap = bitmap  // Set photo preview bitmap
+            photoBitmap = bitmap
             photoName = carViewModel.generatePhotoName(context)
         }
     }
 
-    // Fetch current location if permission is granted
     val scope = rememberCoroutineScope()
     LaunchedEffect(locationPermissionState.status.isGranted) {
         if (locationPermissionState.status.isGranted) {
             scope.launch {
                 getCurrentLocation(context) { gpsCoordinates ->
-                    location = gpsCoordinates  // Save GPS coordinates
+                    location = gpsCoordinates
                 }
             }
         } else {
@@ -105,19 +106,24 @@ fun VerhurenFormLayout(carViewModel: CarViewModel, userViewModel: UserViewModel,
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(Color(0xFF1A1D1E)) // Dark background color
             .padding(16.dp)
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Spacer(modifier = Modifier.height(40.dp))
+
         Text(
             text = stringResource(R.string.hireTitle),
-            style = MaterialTheme.typography.headlineMedium,
-            textAlign = TextAlign.Center
+            style = MaterialTheme.typography.displaySmall.copy(
+                color = Color(0xFF4AC0FF),
+                fontWeight = FontWeight.Bold,
+                fontSize = 28.sp
+            ),
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(bottom = 16.dp)
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Input fields
         VerhurenInputField(label = R.string.brand, value = brandInput, onValueChange = { brandInput = it })
         VerhurenInputField(label = R.string.model, value = modelInput, onValueChange = { modelInput = it })
         VerhurenInputField(label = R.string.bouwjaar, value = buildYearInput, onValueChange = { buildYearInput = it })
@@ -126,30 +132,39 @@ fun VerhurenFormLayout(carViewModel: CarViewModel, userViewModel: UserViewModel,
         VerhurenInputField(label = R.string.Usage, value = verbruikInput, onValueChange = { verbruikInput = it })
         VerhurenInputField(label = R.string.Mileage, value = kmStandInput, onValueChange = { kmStandInput = it })
 
-        // Show photo preview if available
         photoBitmap?.let {
-            Image(bitmap = it.asImageBitmap(), contentDescription = "Selected Photo", modifier = Modifier.size(200.dp))
+            Image(
+                bitmap = it.asImageBitmap(),
+                contentDescription = "Selected Photo",
+                modifier = Modifier
+                    .size(200.dp)
+                    .clip(RoundedCornerShape(10.dp))
+                    .padding(vertical = 16.dp)
+            )
         }
 
-        // Photo selection buttons
         Button(
             onClick = { showPhotoDialog = true },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFF4AC0FF),
+                contentColor = Color.Black
+            ),
+            shape = RoundedCornerShape(10.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 16.dp)
+                .padding(bottom = 16.dp)
         ) {
-            Text(stringResource(R.string.ChoosePhotoBtn))
+            Text(stringResource(R.string.ChoosePhotoBtn), fontWeight = FontWeight.SemiBold)
         }
 
-        // Display selected photo name if available
         photoName?.let {
             Text(
                 text = "Photo selected: $it",
+                color = Color(0xFFB0BEC5),
                 modifier = Modifier.padding(vertical = 8.dp)
             )
         }
 
-        // Add vehicle button
         Button(
             onClick = {
                 if (isLoggedIn) {
@@ -161,26 +176,31 @@ fun VerhurenFormLayout(carViewModel: CarViewModel, userViewModel: UserViewModel,
                         brandstofInput,
                         verbruikInput.toIntOrNull() ?: 0,
                         kmStandInput.toIntOrNull() ?: 0,
-                        location ?: "",  // Use the automatically fetched location
+                        location ?: "",
                         photoBase64
                     )
                 } else {
                     navController.navigate("login")
                 }
             },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFF4AC0FF),
+                contentColor = Color.Black
+            ),
+            shape = RoundedCornerShape(10.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 16.dp)
+                .padding(bottom = 16.dp)
         ) {
-            Text(if (isLoggedIn) stringResource(R.string.Confirm) else "Login to Add Vehicle")
+            Text(if (isLoggedIn) stringResource(R.string.Confirm) else "Login to Add Vehicle", fontWeight = FontWeight.SemiBold)
         }
 
         when (val state = addVehicleState) {
-            is AddVehicleState.Loading -> CircularProgressIndicator()
+            is AddVehicleState.Loading -> CircularProgressIndicator(color = Color(0xFF4AC0FF))
             is AddVehicleState.Success -> {
                 Text(
                     text = state.message,
-                    color = MaterialTheme.colorScheme.primary,
+                    color = Color(0xFF4AC0FF),
                     modifier = Modifier.padding(vertical = 8.dp)
                 )
                 LaunchedEffect(state) {
@@ -194,11 +214,10 @@ fun VerhurenFormLayout(carViewModel: CarViewModel, userViewModel: UserViewModel,
                     modifier = Modifier.padding(vertical = 8.dp)
                 )
             }
-            else -> {} // Idle state, do nothing
+            else -> {}
         }
     }
 
-    // Show dialog for photo selection (camera or gallery)
     if (showPhotoDialog) {
         AlertDialog(
             onDismissRequest = { showPhotoDialog = false },
@@ -252,21 +271,17 @@ fun decodeUriToBitmap(context: Context, uri: Uri): Bitmap? {
     }
 }
 
-// Get current GPS location function
 fun getCurrentLocation(context: Context, onLocationReceived: (String) -> Unit) {
     val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
-    // Request fine location (precise GPS-based location)
     if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PermissionChecker.PERMISSION_GRANTED) {
-
-        // Use GPS as the best provider for high accuracy
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0L, 0f, object : LocationListener {
             override fun onLocationChanged(location: Location) {
                 val latitude = location.latitude
                 val longitude = location.longitude
                 val gpsCoordinates = "$latitude,$longitude"
-                onLocationReceived(gpsCoordinates)  // Pass precise location to the callback
-                locationManager.removeUpdates(this)  // Stop updates after the first location is received
+                onLocationReceived(gpsCoordinates)
+                locationManager.removeUpdates(this)
             }
 
             override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {}
@@ -276,7 +291,6 @@ fun getCurrentLocation(context: Context, onLocationReceived: (String) -> Unit) {
     }
 }
 
-// Encode image to Base64 string
 fun encodeImageToBase64(context: Context, uri: Uri): String? {
     return try {
         val inputStream = context.contentResolver.openInputStream(uri)
@@ -291,7 +305,6 @@ fun encodeImageToBase64(context: Context, uri: Uri): String? {
     }
 }
 
-// Create a URI for saving the photo using FileProvider
 fun createImageUri(context: Context, viewModel: CarViewModel): Uri {
     val photoName = viewModel.generatePhotoName(context)
     val storageDir: File? = context.getExternalFilesDir(android.os.Environment.DIRECTORY_PICTURES)
