@@ -8,17 +8,23 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -55,57 +61,86 @@ fun CatalogusLayout(viewModel: CarViewModel, navController: NavController) {
         viewModel.fetchAvailableVehicles()
     }
 
+    val backgroundColor = Color(0xFF1A1D1E) // Dark background color
+    val accentColor = Color(0xFF4AC0FF) // Light blue accent color
+
     Column(
         modifier = Modifier
+            .fillMaxSize()
+            .background(backgroundColor)
             .statusBarsPadding()
-            .padding(horizontal = 40.dp)
+            .padding(horizontal = 16.dp)
             .verticalScroll(rememberScrollState())
             .safeDrawingPadding(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
             text = stringResource(R.string.CatalogusTitle),
-            style = MaterialTheme.typography.displaySmall,
-            modifier = Modifier.padding(bottom = 30.dp)
+            style = MaterialTheme.typography.displaySmall.copy(
+                color = accentColor,
+                fontWeight = FontWeight.Bold,
+                fontSize = 30.sp
+            ),
+            modifier = Modifier.padding(vertical = 24.dp)
         )
 
         availableVehicles.forEach { vehicle ->
-            CatalogVehicleItem(
+            CatalogVehicleCard(
                 brand = "${vehicle.brand} ${vehicle.model}",
                 photoBase64 = vehicle.photoId,
                 onClick = {
-                    navController.navigate("AvailableCar1/${vehicle.id}")  // Use the dynamic route with car ID
+                    navController.navigate("AvailableCar1/${vehicle.id}") // Use the dynamic route with car ID
                 }
             )
         }
 
-        Spacer(modifier = Modifier.height(150.dp))
+        Spacer(modifier = Modifier.height(100.dp))
     }
 }
 
 @Composable
-fun CatalogVehicleItem(brand: String, photoBase64: String?, onClick: () -> Unit) {
-    Column(
+fun CatalogVehicleCard(brand: String, photoBase64: String?, onClick: () -> Unit) {
+    Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .padding(vertical = 12.dp)
+            .clip(RoundedCornerShape(15.dp)),
+        shape = RoundedCornerShape(15.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color(0xFF2E3135) // Darker background for contrast
+        ),
+        elevation = CardDefaults.cardElevation(8.dp),
+        onClick = onClick
     ) {
-        photoBase64?.let {
-            val bitmap = remember { base64ToBitmap(it) }
-            bitmap?.let {
-                Image(
-                    bitmap = it.asImageBitmap(),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(150.dp)
-                        .padding(bottom = 8.dp)
-                )
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            photoBase64?.let {
+                val bitmap = remember { base64ToBitmap(it) }
+                bitmap?.let {
+                    Image(
+                        bitmap = it.asImageBitmap(),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(200.dp)
+                            .clip(RoundedCornerShape(10.dp))
+                            .padding(bottom = 12.dp)
+                    )
+                }
             }
-        }
 
-        CatalogButton(text = brand, onClick = onClick)
+            Text(
+                text = brand,
+                style = MaterialTheme.typography.bodyLarge.copy(
+                    color = Color(0xFFB0BEC5), // Light grey color for better readability
+                    fontWeight = FontWeight.Bold
+                ),
+                modifier = Modifier.padding(top = 8.dp)
+            )
+        }
     }
 }
 
@@ -122,11 +157,17 @@ fun base64ToBitmap(base64String: String): Bitmap? {
 fun CatalogButton(text: String, onClick: () -> Unit) {
     Button(
         onClick = onClick,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Color(0xFF4AC0FF), // Light blue accent color
+            contentColor = Color.Black
+        ),
+        shape = RoundedCornerShape(10.dp),
         modifier = Modifier
             .fillMaxWidth()
+            .height(55.dp)
             .padding(vertical = 8.dp)
     ) {
-        Text(text)
+        Text(text, fontWeight = FontWeight.SemiBold)
     }
 }
 
