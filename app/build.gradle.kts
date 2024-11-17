@@ -85,6 +85,10 @@ dependencies {
     // Gson
     implementation("com.google.code.gson:gson:2.8.9")
 
+    //coil
+    implementation("io.coil-kt:coil-compose:2.2.2")
+
+
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
 
