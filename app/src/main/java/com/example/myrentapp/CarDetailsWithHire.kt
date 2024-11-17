@@ -5,34 +5,38 @@ import android.graphics.BitmapFactory
 import android.util.Base64
 import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.myrentapp.ui.theme.MyRentAppTheme
+import androidx.compose.ui.viewinterop.AndroidView
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.MapsInitializer
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
-import androidx.compose.ui.viewinterop.AndroidView
+import com.example.myrentapp.ui.theme.MyRentAppTheme
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
 
 @Composable
 fun CarDetailsWithHireLayout(carViewModel: CarViewModel, navController: NavController, carId: String) {
     val vehicleState by carViewModel.getVehicleById(carId).collectAsState(initial = VehicleState.Loading)
-    val context = LocalContext.current
     var photoBitmap by remember { mutableStateOf<Bitmap?>(null) }
 
     LaunchedEffect(vehicleState) {
@@ -44,23 +48,34 @@ fun CarDetailsWithHireLayout(carViewModel: CarViewModel, navController: NavContr
         }
     }
 
+    val backgroundColor = Color(0xFF1A1D1E) // Dark background color
+    val accentColor = Color(0xFF4AC0FF) // Light blue accent color
+    val textColor = Color(0xFFB0BEC5) // Light grey color for text
+
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(backgroundColor)
             .padding(16.dp)
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         when (vehicleState) {
             is VehicleState.Loading -> {
-                CircularProgressIndicator()
+                CircularProgressIndicator(color = accentColor)
             }
             is VehicleState.Success -> {
                 val vehicle = (vehicleState as VehicleState.Success).vehicle
+
+                Spacer(modifier = Modifier.height(30.dp)) // Add space to move the title down
                 Text(
                     text = "${vehicle.brand} ${vehicle.model}",
-                    style = MaterialTheme.typography.headlineMedium,
-                    modifier = Modifier.fillMaxWidth()
+                    style = MaterialTheme.typography.headlineMedium.copy(
+                        color = accentColor,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 28.sp
+                    ),
+                    modifier = Modifier.align(Alignment.CenterHorizontally) // Center the title text
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -70,36 +85,61 @@ fun CarDetailsWithHireLayout(carViewModel: CarViewModel, navController: NavContr
                     Image(
                         bitmap = it.asImageBitmap(),
                         contentDescription = "Car Photo",
-                        modifier = Modifier.size(200.dp)
+                        modifier = Modifier
+                            .size(250.dp)
+                            .clip(RoundedCornerShape(10.dp))
+                            .padding(bottom = 15.dp)
                     )
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Display vehicle details
                 Text(
-                    text = "Build Year: ${vehicle.buildYear}\n" +
-                            "License Plate: ${vehicle.kenteken}\n" +
-                            "Fuel Type: ${vehicle.brandstof}\n" +
-                            "Usage: ${vehicle.verbruik} L/100km\n" +
-                            "Mileage: ${vehicle.kmstand} km",
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.fillMaxWidth()
+                    text = "Car Details:",
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        color = accentColor,
+                        fontWeight = FontWeight.SemiBold
+                    ),
+                    modifier = Modifier
+                        .align(Alignment.Start)
                 )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Button to hire the car
-                Button(onClick = {
-                    carViewModel.hireVehicle(carId) {
-                        // On success, navigate to "My Cars" page
-                        navController.navigate("myCars")
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 16.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFF2E3135)),
+                    shape = RoundedCornerShape(10.dp),
+                    elevation = CardDefaults.cardElevation(4.dp)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp),
+                        horizontalAlignment = Alignment.Start
+                    ) {
+                        Text(
+                            text = "Build Year: ${vehicle.buildYear}",
+                            style = MaterialTheme.typography.bodyLarge.copy(color = textColor),
+                            modifier = Modifier.padding(bottom = 4.dp)
+                        )
+                        Text(
+                            text = "License Plate: ${vehicle.kenteken}",
+                            style = MaterialTheme.typography.bodyLarge.copy(color = textColor),
+                            modifier = Modifier.padding(bottom = 4.dp)
+                        )
+                        Text(
+                            text = "Fuel Type: ${vehicle.brandstof}",
+                            style = MaterialTheme.typography.bodyLarge.copy(color = textColor),
+                            modifier = Modifier.padding(bottom = 4.dp)
+                        )
+                        Text(
+                            text = "Usage: ${vehicle.verbruik} L/100km",
+                            style = MaterialTheme.typography.bodyLarge.copy(color = textColor),
+                            modifier = Modifier.padding(bottom = 4.dp)
+                        )
+                        Text(
+                            text = "Mileage: ${vehicle.kmstand} km",
+                            style = MaterialTheme.typography.bodyLarge.copy(color = textColor),
+                            modifier = Modifier.padding(bottom = 4.dp)
+                        )
                     }
-                }) {
-                    Text("Hire Car")
                 }
-
-                Spacer(modifier = Modifier.height(16.dp))
 
                 // Display location on the map if available
                 vehicle.location.split(",").let { coordinates ->
@@ -111,6 +151,28 @@ fun CarDetailsWithHireLayout(carViewModel: CarViewModel, navController: NavContr
                         }
                     }
                 }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Button(
+                    onClick = {
+                        carViewModel.hireVehicle(carId) {
+                            navController.navigate("myCars")
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = accentColor,
+                        contentColor = Color.Black
+                    ),
+                    shape = RoundedCornerShape(10.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(55.dp)
+                ) {
+                    Text("Hire Car", fontWeight = FontWeight.SemiBold)
+                }
+                Spacer(modifier = Modifier.height(30.dp))
+
             }
             is VehicleState.Error -> {
                 Text(
@@ -147,6 +209,8 @@ fun GoogleMapViewHire(location: LatLng) {
         modifier = Modifier
             .fillMaxWidth()
             .height(300.dp)
+            .clip(RoundedCornerShape(15.dp))
+            .padding(bottom = 16.dp)
     )
 }
 
