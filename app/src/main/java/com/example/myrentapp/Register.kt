@@ -58,16 +58,16 @@ fun RegisterFormLayout(viewModel: UserViewModel, navController: NavController) {
             value = username,
             onValueChange = { username = it },
             label = { Text("Username") },
+            textStyle = LocalTextStyle.current.copy(color = Color.White),
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 focusedBorderColor = accentColor,
                 cursorColor = accentColor,
                 unfocusedBorderColor = Color.Gray,
                 focusedLabelColor = accentColor,
-                unfocusedLabelColor = Color.Gray
+                unfocusedLabelColor = Color.Gray,
+                containerColor = Color.Transparent // Set container color to transparent
             ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Color(0xFF2E3135), shape = RoundedCornerShape(8.dp))
+            modifier = Modifier.fillMaxWidth()
         )
         Spacer(modifier = Modifier.height(12.dp))
 
@@ -77,16 +77,16 @@ fun RegisterFormLayout(viewModel: UserViewModel, navController: NavController) {
             onValueChange = { password = it },
             label = { Text("Password") },
             visualTransformation = PasswordVisualTransformation(),
+            textStyle = LocalTextStyle.current.copy(color = Color.White),
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 focusedBorderColor = accentColor,
                 cursorColor = accentColor,
                 unfocusedBorderColor = Color.Gray,
                 focusedLabelColor = accentColor,
-                unfocusedLabelColor = Color.Gray
+                unfocusedLabelColor = Color.Gray,
+                containerColor = Color.Transparent // Set container color to transparent
             ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Color(0xFF2E3135), shape = RoundedCornerShape(8.dp))
+            modifier = Modifier.fillMaxWidth()
         )
         Spacer(modifier = Modifier.height(12.dp))
 
@@ -95,16 +95,16 @@ fun RegisterFormLayout(viewModel: UserViewModel, navController: NavController) {
             value = email,
             onValueChange = { email = it },
             label = { Text("Email") },
+            textStyle = LocalTextStyle.current.copy(color = Color.White),
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 focusedBorderColor = accentColor,
                 cursorColor = accentColor,
                 unfocusedBorderColor = Color.Gray,
                 focusedLabelColor = accentColor,
-                unfocusedLabelColor = Color.Gray
+                unfocusedLabelColor = Color.Gray,
+                containerColor = Color.Transparent // Set container color to transparent
             ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Color(0xFF2E3135), shape = RoundedCornerShape(8.dp))
+            modifier = Modifier.fillMaxWidth()
         )
         Spacer(modifier = Modifier.height(24.dp))
 

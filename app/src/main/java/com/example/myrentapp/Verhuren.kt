@@ -253,8 +253,9 @@ fun VerhurenInputField(label: Int, value: String, onValueChange: (String) -> Uni
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
-        label = { Text(stringResource(label)) },
+        label = { Text(stringResource(label), color = Color.White) },
         singleLine = true,
+        textStyle = LocalTextStyle.current.copy(color = Color.White),
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp)
