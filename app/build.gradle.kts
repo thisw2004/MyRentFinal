@@ -137,6 +137,15 @@ dependencies {
     implementation("androidx.activity:activity-compose:1.7.2")
     implementation("androidx.navigation:navigation-compose:2.7.2")
 
+    implementation ("io.insert-koin:koin-core:3.3.3")
+
+    // Koin for Android
+    implementation ("io.insert-koin:koin-android:3.3.3")
+
+    // Koin Test (if you want to use Koin in tests)
+    implementation ("io.insert-koin:koin-test:3.3.3")
+    implementation ("io.insert-koin:koin-test-junit4:3.3.3")
+
     implementation("junit:junit:4.13.2")
     implementation("org.mockito:mockito-core:4.8.0")
     implementation("org.mockito.kotlin:mockito-kotlin:4.1.0")

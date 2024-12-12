@@ -9,6 +9,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -30,8 +31,10 @@ fun HomeScreenLayout(sharedViewModel: UserViewModel, navController: NavControlle
         modifier = Modifier
             .fillMaxSize()
             .background(backgroundColor)
-            .padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .padding(24.dp)
+            .testTag("homeScreenContainer"),// Add a test tag for this screen
+
+    horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // Display a styled "Home" subtitle
 

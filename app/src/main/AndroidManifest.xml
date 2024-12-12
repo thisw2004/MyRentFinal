@@ -2,9 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" package="com.example.myrentapp">
 
-<!--    <instrumentation-->
-<!--        android:name="androidx.test.runner.AndroidJUnitRunner"-->
-<!--        android:targetPackage="com.example.myrentapp" />-->
+    <instrumentation
+        android:name="androidx.test.runner.AndroidJUnitRunner"
+        android:targetPackage="com.example.myrentapp" />
 
 
     <uses-feature

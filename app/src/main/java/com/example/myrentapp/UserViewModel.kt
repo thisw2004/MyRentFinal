@@ -48,9 +48,9 @@ interface MyRentApi {
     suspend fun register(@Body registerRequest: RegisterRequest): Response<ResponseBody>
 }
 
-class UserViewModel : ViewModel() {
-    private val _loginState = MutableStateFlow<LoginState>(LoginState.Idle)
-    val loginState: StateFlow<LoginState> = _loginState
+open class UserViewModel : ViewModel() {
+    val _loginState = MutableStateFlow<LoginState>(LoginState.Idle)
+    open val loginState: StateFlow<LoginState> = _loginState
 
     private val _registerState = MutableStateFlow<RegisterState>(RegisterState.Idle)
     val registerState: StateFlow<RegisterState> = _registerState
@@ -83,7 +83,7 @@ class UserViewModel : ViewModel() {
     fun isLoggedIn(): Boolean {
         return userSession.value != null
     }
-    fun login(username: String, password: String) {
+    open fun login(username: String, password: String) {
         viewModelScope.launch {
             _loginState.value = LoginState.Loading
             _debugInfo.value = "Starting login process..."
