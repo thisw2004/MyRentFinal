@@ -77,7 +77,7 @@ class UserViewModel : ViewModel() {
         .addConverterFactory(GsonConverterFactory.create(gson))
         .build()
 
-    private val api = retrofit.create(MyRentApi::class.java)
+    var api = retrofit.create(MyRentApi::class.java)
 
 
     fun isLoggedIn(): Boolean {
