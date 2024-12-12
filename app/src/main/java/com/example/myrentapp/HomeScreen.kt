@@ -10,6 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -21,30 +22,25 @@ import com.example.myrentapp.ui.theme.MyRentAppTheme
 @Composable
 fun HomeScreenLayout(sharedViewModel: UserViewModel, navController: NavController) {
     val userSessionState = sharedViewModel.userSession.collectAsState()
-    val username = userSessionState.value?.username ?: "User"
+    val username = userSessionState.value?.username ?: stringResource(id = R.string.user)
 
-    // Define the primary and accent colors based on the design
-    val backgroundColor = Color(0xFF1A1D1E) // Dark background color
-    val accentColor = Color(0xFF4AC0FF) // Light blue accent color
+    val backgroundColor = Color(0xFF1A1D1E)
+    val accentColor = Color(0xFF4AC0FF)
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(backgroundColor)
             .padding(24.dp)
-            .testTag("homeScreenContainer"),// Add a test tag for this screen
+            .testTag("homeScreenContainer"),
 
     horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Display a styled "Home" subtitle
 
-
-        // Add extra spacer to move the welcome text down
         Spacer(modifier = Modifier.height(52.dp))
 
-        // Display username greeting
         Text(
-            text = "Welcome, $username",
+            text = stringResource(id = R.string.greeting) + ", $username",
             style = MaterialTheme.typography.headlineLarge.copy(
                 fontSize = 32.sp,
                 fontWeight = FontWeight.Bold,
@@ -68,7 +64,7 @@ fun HomeScreenLayout(sharedViewModel: UserViewModel, navController: NavControlle
                 .padding(bottom = 16.dp)
                 .height(55.dp)
         ) {
-            Text("Catalogus", fontWeight = FontWeight.SemiBold)
+            Text(text = stringResource(id = R.string.CatalogusTitle), fontWeight = FontWeight.SemiBold)
         }
 
         Button(
@@ -83,7 +79,7 @@ fun HomeScreenLayout(sharedViewModel: UserViewModel, navController: NavControlle
                 .padding(bottom = 16.dp)
                 .height(55.dp)
         ) {
-            Text("My Hired Cars", fontWeight = FontWeight.SemiBold)
+            Text(text = stringResource(id = R.string.MyCarTitle), fontWeight = FontWeight.SemiBold)
         }
 
         Button(
@@ -98,13 +94,11 @@ fun HomeScreenLayout(sharedViewModel: UserViewModel, navController: NavControlle
                 .padding(bottom = 16.dp)
                 .height(55.dp)
         ) {
-            Text("Rent Your Car", fontWeight = FontWeight.SemiBold)
+            Text(text = stringResource(id = R.string.RentCar), fontWeight = FontWeight.SemiBold)
         }
 
-        // Adjust the bottom spacer to move the logout button up
         Spacer(modifier = Modifier.height(350.dp))
 
-        // Logout button
         Button(
             onClick = {
                 // Implement logout logic
@@ -122,7 +116,7 @@ fun HomeScreenLayout(sharedViewModel: UserViewModel, navController: NavControlle
                 .fillMaxWidth()
                 .height(55.dp)
         ) {
-            Text("Logout", fontWeight = FontWeight.SemiBold)
+            Text(text = stringResource(id = R.string.Logout), fontWeight = FontWeight.SemiBold)
         }
     }
 }

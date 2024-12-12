@@ -34,7 +34,7 @@
     <string name="titleLooproute">Walking route</string>
     <string name="explanationLooproute">The walking route from your location to your (rented) car.</string>
     <string name="back">Back</string>
-    <string name="CatalogusTitle" translatable="false">Catalogus</string>
+    <string name="CatalogusTitle">Catalog</string>
     <string name="MyCarTitle">My cars</string>
     <string name="homeTitle" translatable="false">Home</string>
     <string name="Car1Txt">Car 1</string>
@@ -54,9 +54,21 @@
     <string name="Mileage">Mileage</string>
     <string name="Location">Location</string>
     <string name="ChoosePhotoBtn">Choose or take Photo</string>
-    <string name="NoOwnedCars">Currently,you have no owned cars</string>
-    <string name="OwnedCarsTitle">Je gehuurde auto\'s</string>
-    <string name="error_loading_car_details">Sorry, we have some trouble at the moment to get the car data,try again later.</string>
+    <string name="NoOwnedCars" translatable="false">Currently,you have no owned cars</string>
+    <string name="OwnedCarsTitle" translatable="false">Je gehuurde auto\'s</string>
+    <string name="error_loading_car_details" translatable="false">Sorry, we have some trouble at the moment to get the car data,try again later.</string>
+    <string name="user">User</string>
+    <string name="greeting">Welcome</string>
+    <string name="mail">Mailaddress</string>
+    <string name="Logout">Logout</string>
+    <string name="carDetailTitle">Car details:</string>
+    <string name="buildYearTitle">Build year:</string>
+    <string name="Licenseplate">License plate</string>
+    <string name="Fueltype">Fuel type</string>
+    <string name="selectedPhoto">Selected photo:</string>
+    <string name="chooseOption">Choose an option</string>
+    <string name="PhotoChoiceQuestion">Would you like to take a new photo or select an existing one?</string>
+    <string name="selectPhoto">Select photo</string>
 
 
 </resources>

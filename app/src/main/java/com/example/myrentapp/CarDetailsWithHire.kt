@@ -18,6 +18,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -93,7 +94,7 @@ fun CarDetailsWithHireLayout(carViewModel: CarViewModel, navController: NavContr
                 }
 
                 Text(
-                    text = "Car Details:",
+                    text = stringResource(id = R.string.carDetailTitle),
                     style = MaterialTheme.typography.titleMedium.copy(
                         color = accentColor,
                         fontWeight = FontWeight.SemiBold
@@ -114,27 +115,27 @@ fun CarDetailsWithHireLayout(carViewModel: CarViewModel, navController: NavContr
                         horizontalAlignment = Alignment.Start
                     ) {
                         Text(
-                            text = "Build Year: ${vehicle.buildYear}",
+                            text = "${stringResource(id = R.string.buildYearTitle)} ${vehicle.buildYear}",
                             style = MaterialTheme.typography.bodyLarge.copy(color = textColor),
                             modifier = Modifier.padding(bottom = 4.dp)
                         )
                         Text(
-                            text = "License Plate: ${vehicle.kenteken}",
+                            text = "${stringResource(id = R.string.Licenseplate)} ${vehicle.kenteken}",
                             style = MaterialTheme.typography.bodyLarge.copy(color = textColor),
                             modifier = Modifier.padding(bottom = 4.dp)
                         )
                         Text(
-                            text = "Fuel Type: ${vehicle.brandstof}",
+                            text = "${stringResource(id = R.string.Fueltype)} ${vehicle.brandstof}",
                             style = MaterialTheme.typography.bodyLarge.copy(color = textColor),
                             modifier = Modifier.padding(bottom = 4.dp)
                         )
                         Text(
-                            text = "Usage: ${vehicle.verbruik} L/100km",
+                            text = "${stringResource(id = R.string.Usage)} ${vehicle.verbruik} L/100km",
                             style = MaterialTheme.typography.bodyLarge.copy(color = textColor),
                             modifier = Modifier.padding(bottom = 4.dp)
                         )
                         Text(
-                            text = "Mileage: ${vehicle.kmstand} km",
+                            text = "${stringResource(id = R.string.Mileage)} ${vehicle.kmstand} km",
                             style = MaterialTheme.typography.bodyLarge.copy(color = textColor),
                             modifier = Modifier.padding(bottom = 4.dp)
                         )
@@ -169,7 +170,7 @@ fun CarDetailsWithHireLayout(carViewModel: CarViewModel, navController: NavContr
                         .fillMaxWidth()
                         .height(55.dp)
                 ) {
-                    Text("Hire Car", fontWeight = FontWeight.SemiBold)
+                    Text(stringResource(id = R.string.HireCar), fontWeight = FontWeight.SemiBold)
                 }
                 Spacer(modifier = Modifier.height(30.dp))
 
@@ -195,7 +196,10 @@ fun GoogleMapViewHire(location: LatLng) {
         mapView.onResume()
         mapView.getMapAsync { googleMap ->
             MapsInitializer.initialize(context)
-            googleMap.addMarker(MarkerOptions().position(location).title("Car Location"))
+            googleMap.addMarker(
+                MarkerOptions()
+                    .position(location)
+                    .title(context.getString(R.string.Location)))
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 14f))
         }
         onDispose {

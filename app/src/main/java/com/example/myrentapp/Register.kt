@@ -8,6 +8,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
@@ -43,7 +44,7 @@ fun RegisterFormLayout(viewModel: UserViewModel, navController: NavController) {
     ) {
         Spacer(modifier = Modifier.height(40.dp)) // Move title down
         Text(
-            text = "Register",
+            text = stringResource(id = R.string.RegisterTitle),
             style = MaterialTheme.typography.headlineMedium.copy(
                 color = accentColor,
                 fontWeight = FontWeight.Bold,
@@ -57,7 +58,7 @@ fun RegisterFormLayout(viewModel: UserViewModel, navController: NavController) {
         OutlinedTextField(
             value = username,
             onValueChange = { username = it },
-            label = { Text("Username") },
+            label = { Text(text = stringResource(id = R.string.Username)) },
             textStyle = LocalTextStyle.current.copy(color = Color.White),
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 focusedBorderColor = accentColor,
@@ -75,7 +76,7 @@ fun RegisterFormLayout(viewModel: UserViewModel, navController: NavController) {
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
-            label = { Text("Password") },
+            label = { Text(text = stringResource(id = R.string.Password)) },
             visualTransformation = PasswordVisualTransformation(),
             textStyle = LocalTextStyle.current.copy(color = Color.White),
             colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -94,7 +95,7 @@ fun RegisterFormLayout(viewModel: UserViewModel, navController: NavController) {
         OutlinedTextField(
             value = email,
             onValueChange = { email = it },
-            label = { Text("Email") },
+            label = { Text(stringResource(id = R.string.mail)) },
             textStyle = LocalTextStyle.current.copy(color = Color.White),
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 focusedBorderColor = accentColor,
@@ -121,7 +122,7 @@ fun RegisterFormLayout(viewModel: UserViewModel, navController: NavController) {
                         .fillMaxWidth()
                         .height(50.dp)
                 ) {
-                    Text("Register", fontWeight = FontWeight.SemiBold)
+                    Text(text = stringResource(id = R.string.RegisterTitle), fontWeight = FontWeight.SemiBold)
                 }
                 if (registerState is RegisterState.Error) {
                     Spacer(modifier = Modifier.height(8.dp))

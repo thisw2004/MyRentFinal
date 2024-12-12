@@ -35,4 +35,17 @@
     <string name="Mileage">Km stand</string>
     <string name="Location">Locatie</string>
     <string name="ChoosePhotoBtn">Kies of maak foto</string>
+    <string name="mail">Emailadres</string>
+    <string name="CatalogusTitle">Catalogus</string>
+    <string name="user">Gebruiker</string>
+    <string name="greeting">Welkom</string>
+    <string name="Logout">Uitloggen</string>
+    <string name="carDetailTitle">Details van de auto:</string>
+    <string name="buildYearTitle">Bouw jaar:</string>
+    <string name="Licenseplate">Kenteken</string>
+    <string name="Fueltype">Brandstofsoort</string>
+    <string name="selectedPhoto">Geselecteerde foto:</string>
+    <string name="chooseOption">Kies een optie</string>
+    <string name="PhotoChoiceQuestion">Wilt u een nieuwe foto maken of een bestaande selecteren?</string>
+    <string name="selectPhoto">Selecteer een foto</string>
 </resources>

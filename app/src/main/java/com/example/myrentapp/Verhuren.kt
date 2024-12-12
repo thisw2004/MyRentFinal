@@ -135,7 +135,7 @@ fun VerhurenFormLayout(carViewModel: CarViewModel, userViewModel: UserViewModel,
         photoBitmap?.let {
             Image(
                 bitmap = it.asImageBitmap(),
-                contentDescription = "Selected Photo",
+                contentDescription = stringResource(id = R.string.selectedPhoto),
                 modifier = Modifier
                     .size(200.dp)
                     .clip(RoundedCornerShape(10.dp))
@@ -159,7 +159,7 @@ fun VerhurenFormLayout(carViewModel: CarViewModel, userViewModel: UserViewModel,
 
         photoName?.let {
             Text(
-                text = "Photo selected: $it",
+                text = "${stringResource(id = R.string.selectedPhoto)} $it",
                 color = Color(0xFFB0BEC5),
                 modifier = Modifier.padding(vertical = 8.dp)
             )
@@ -221,8 +221,8 @@ fun VerhurenFormLayout(carViewModel: CarViewModel, userViewModel: UserViewModel,
     if (showPhotoDialog) {
         AlertDialog(
             onDismissRequest = { showPhotoDialog = false },
-            title = { Text("Choose an option") },
-            text = { Text("Would you like to take a new photo or select an existing one?") },
+            title = { Text(text = stringResource(id = R.string.chooseOption)) },
+            text = { Text(stringResource(id = R.string.PhotoChoiceQuestion)) },
             confirmButton = {
                 TextButton(onClick = {
                     showPhotoDialog = false
@@ -233,7 +233,7 @@ fun VerhurenFormLayout(carViewModel: CarViewModel, userViewModel: UserViewModel,
                         cameraPermissionState.launchPermissionRequest()
                     }
                 }) {
-                    Text("Take Photo")
+                    Text(stringResource(id = R.string.TakePhoto))
                 }
             },
             dismissButton = {
@@ -241,7 +241,7 @@ fun VerhurenFormLayout(carViewModel: CarViewModel, userViewModel: UserViewModel,
                     showPhotoDialog = false
                     pickPhoto.launch("image/*")
                 }) {
-                    Text("Select Photo")
+                    Text(stringResource(id = R.string.selectPhoto))
                 }
             }
         )

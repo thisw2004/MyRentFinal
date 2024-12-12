@@ -9,6 +9,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
@@ -33,7 +34,7 @@ fun LoginFormLayout(viewModel: UserViewModel, navController: NavController) {
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "Login",
+            text = stringResource(id = R.string.Login),
             style = MaterialTheme.typography.headlineMedium.copy(
                 fontSize = 32.sp,
                 fontWeight = FontWeight.Bold,
@@ -45,12 +46,12 @@ fun LoginFormLayout(viewModel: UserViewModel, navController: NavController) {
         OutlinedTextField(
             value = username,
             onValueChange = { username = it },
-            label = { Text("Username", color = Color.White) },
+            label = { Text(text = stringResource(id = R.string.Username), color = Color.White) },
             modifier = Modifier
                 .fillMaxWidth()
-                .testTag("usernameField") // Add TestTag
+                .testTag("usernameField")
 
-            .background(Color.Transparent),
+                .background(Color.Transparent),
             textStyle = MaterialTheme.typography.bodyLarge.copy(color = Color.White)
         )
         Spacer(modifier = Modifier.height(12.dp))
@@ -58,13 +59,13 @@ fun LoginFormLayout(viewModel: UserViewModel, navController: NavController) {
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
-            label = { Text("Password", color = Color.White) },
+            label = { Text(text = stringResource(id = R.string.Password), color = Color.White) },
             visualTransformation = PasswordVisualTransformation(),
             modifier = Modifier
                 .fillMaxWidth()
-                .testTag("passwordField")// Add TestTag
+                .testTag("passwordField")
 
-            .background(Color.Transparent),
+                .background(Color.Transparent),
             textStyle = MaterialTheme.typography.bodyLarge.copy(color = Color.White)
         )
         Spacer(modifier = Modifier.height(24.dp))
@@ -82,11 +83,11 @@ fun LoginFormLayout(viewModel: UserViewModel, navController: NavController) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(50.dp)
-                        .testTag("loginButton"), // Add TestTag
+                        .testTag("loginButton"),
 
 
                 ) {
-                    Text("Login", fontWeight = FontWeight.SemiBold)
+                    Text(text = stringResource(id = R.string.Login), fontWeight = FontWeight.SemiBold)
                 }
                 if (loginState is LoginState.Error) {
                     Spacer(modifier = Modifier.height(12.dp))

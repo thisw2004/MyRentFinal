@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -59,7 +60,7 @@ fun MyMainscreenLayout(navController: NavController) {
                 .padding(top = 60.dp, end = 15.dp)
                 .testTag("mainLoginButton") //tag for espresso ui test.
         ) {
-            Text("Login")
+            Text(text = stringResource(id = R.string.Login))
         }
 
         // Main content column
@@ -82,7 +83,7 @@ fun MyMainscreenLayout(navController: NavController) {
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                text = "Welcome to MyRent! Here you can easily find and rent cars at your fingertips. Whether you need a quick ride or want to earn some extra by sharing your own car, we have everything you need. So, let's hit the road together and redefine mobility. Have fun with MyRent!",
+                text = stringResource(id = R.string.IntroTxt), 
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.bodyMedium.copy(color = Color.White),
                 modifier = Modifier.padding(horizontal = 8.dp)
@@ -98,7 +99,7 @@ fun MyMainscreenLayout(navController: NavController) {
                     .fillMaxWidth()
                     .height(55.dp)
             ) {
-                Text("Register", fontWeight = FontWeight.SemiBold)
+                Text(text = stringResource(id = R.string.RegisterTitle), fontWeight = FontWeight.SemiBold)
             }
         }
     }

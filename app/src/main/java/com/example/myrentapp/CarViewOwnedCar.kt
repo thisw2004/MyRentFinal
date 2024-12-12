@@ -18,6 +18,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -48,9 +49,9 @@ fun CarViewOwnedCar(carViewModel: CarViewModel, navController: NavController, ca
         }
     }
 
-    val backgroundColor = Color(0xFF1A1D1E) // Dark background color
-    val accentColor = Color(0xFF4AC0FF) // Light blue accent color
-    val textColor = Color(0xFFB0BEC5) // Light grey color for text
+    val backgroundColor = Color(0xFF1A1D1E)
+    val accentColor = Color(0xFF4AC0FF)
+    val textColor = Color(0xFFB0BEC5)
 
     Column(
         modifier = Modifier
@@ -67,7 +68,7 @@ fun CarViewOwnedCar(carViewModel: CarViewModel, navController: NavController, ca
             is VehicleState.Success -> {
                 val vehicle = (vehicleState as VehicleState.Success).vehicle
 
-                Spacer(modifier = Modifier.height(30.dp)) // Add space to move the title down
+                Spacer(modifier = Modifier.height(30.dp))
                 Text(
                     text = "${vehicle.brand} ${vehicle.model}",
                     style = MaterialTheme.typography.headlineMedium.copy(
@@ -75,7 +76,7 @@ fun CarViewOwnedCar(carViewModel: CarViewModel, navController: NavController, ca
                         fontWeight = FontWeight.Bold,
                         fontSize = 28.sp
                     ),
-                    modifier = Modifier.align(Alignment.CenterHorizontally) // Center the title text
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -93,7 +94,7 @@ fun CarViewOwnedCar(carViewModel: CarViewModel, navController: NavController, ca
                 }
 
                 Text(
-                    text = "Car Details:",
+                    text = stringResource(id = R.string.carDetailTitle),
                     style = MaterialTheme.typography.titleMedium.copy(
                         color = accentColor,
                         fontWeight = FontWeight.SemiBold
@@ -114,27 +115,27 @@ fun CarViewOwnedCar(carViewModel: CarViewModel, navController: NavController, ca
                         horizontalAlignment = Alignment.Start
                     ) {
                         Text(
-                            text = "Build Year: ${vehicle.buildYear}",
+                            text = "${stringResource(id = R.string.buildYearTitle)} ${vehicle.buildYear}",
                             style = MaterialTheme.typography.bodyLarge.copy(color = textColor),
                             modifier = Modifier.padding(bottom = 4.dp)
                         )
                         Text(
-                            text = "License Plate: ${vehicle.kenteken}",
+                            text = "${stringResource(id = R.string.Licenseplate)} ${vehicle.kenteken}",
                             style = MaterialTheme.typography.bodyLarge.copy(color = textColor),
                             modifier = Modifier.padding(bottom = 4.dp)
                         )
                         Text(
-                            text = "Fuel Type: ${vehicle.brandstof}",
+                            text = "${stringResource(id = R.string.Fueltype)} ${vehicle.brandstof}",
                             style = MaterialTheme.typography.bodyLarge.copy(color = textColor),
                             modifier = Modifier.padding(bottom = 4.dp)
                         )
                         Text(
-                            text = "Usage: ${vehicle.verbruik} L/100km",
+                            text = "${stringResource(id = R.string.Usage)} ${vehicle.verbruik} L/100km",
                             style = MaterialTheme.typography.bodyLarge.copy(color = textColor),
                             modifier = Modifier.padding(bottom = 4.dp)
                         )
                         Text(
-                            text = "Mileage: ${vehicle.kmstand} km",
+                            text = "${stringResource(id = R.string.Mileage)} ${vehicle.kmstand} km",
                             style = MaterialTheme.typography.bodyLarge.copy(color = textColor),
                             modifier = Modifier.padding(bottom = 4.dp)
                         )
@@ -175,7 +176,10 @@ fun GoogleMapViewCarDetails(location: LatLng) {
         mapView.onResume()
         mapView.getMapAsync { googleMap ->
             MapsInitializer.initialize(context)
-            googleMap.addMarker(MarkerOptions().position(location).title("Car Location"))
+            googleMap.addMarker(
+                MarkerOptions()
+                    .position(location)
+                    .title(context.getString(R.string.Location)))
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 14f))
         }
         onDispose {
