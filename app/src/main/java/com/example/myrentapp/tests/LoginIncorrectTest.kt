@@ -4,14 +4,6 @@ import org.junit.Test
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-//data class LoginRequest(val username: String, val password: String)
-//data class LoginResponse(val token: String)
-
-//interface MyRentApi {
-//    @POST("login")
-//    suspend fun login(@Body loginRequest: LoginRequest): retrofit2.Response<LoginResponse>
-//}
-
 
 class UserViewModelLoginIncorrectTest {
 
@@ -25,10 +17,6 @@ class UserViewModelLoginIncorrectTest {
 
     @Test
     fun testLoginIncorrect() = runBlocking {
-        // Test with correct credentials
-//        val correctLoginRequest = LoginRequest(username = "test", password = "test")
-//        val correctResponse = api.login(correctLoginRequest)
-//        assertTrue("Login should succeed with correct credentials", correctResponse.isSuccessful)
 
         // Test with incorrect credentials
         val incorrectLoginRequest = LoginRequest(username = "wrongUser", password = "wrongPass")

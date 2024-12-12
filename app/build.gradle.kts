@@ -64,8 +64,16 @@ dependencies {
     implementation("androidx.test.espresso:espresso-core:3.5.1")
     implementation(platform("androidx.compose:compose-bom:2023.10.01"))
     implementation("androidx.compose.ui:ui-test-junit4")
-    debugImplementation("androidx.compose.ui:ui-tooling")
-    debugImplementation("androidx.compose.ui:ui-test-manifest")
+    implementation("androidx.compose.ui:ui-tooling")
+    implementation("androidx.compose.ui:ui-test-manifest")
+    // JUnit extension for Android
+    implementation ("androidx.test.ext:junit:1.1.5")
+
+    // Espresso core library
+    implementation ("androidx.test.espresso:espresso-core:3.5.1")
+
+    // (Optional) Espresso contrib library for advanced interactions
+    implementation ("androidx.test.espresso:espresso-contrib:3.5.1")
 
     //for navigation
     implementation ("androidx.navigation:navigation-compose:2.4.0-alpha10")
@@ -103,16 +111,11 @@ dependencies {
     implementation("com.google.android.gms:play-services-maps:18.0.0")
     implementation("com.google.maps.android:maps-compose:6.1.0")
 
-
-
-        implementation("androidx.compose.ui:ui:1.5.0")
-        implementation("androidx.compose.material3:material3:1.0.0")
-        implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
-        implementation("androidx.compose.runtime:runtime-livedata:1.5.0")
-        implementation("androidx.navigation:navigation-compose:2.7.2")
-
-
-
+    implementation("androidx.compose.ui:ui:1.5.0")
+    implementation("androidx.compose.material3:material3:1.0.0")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
+    implementation("androidx.compose.runtime:runtime-livedata:1.5.0")
+    implementation("androidx.navigation:navigation-compose:2.7.2")
 
     implementation ("com.squareup.retrofit2:retrofit:2.9.0")
     implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
@@ -144,6 +147,10 @@ dependencies {
     implementation("org.mockito:mockito-core:4.8.0")
     implementation("org.mockito.kotlin:mockito-kotlin:4.1.0")
     implementation("androidx.arch.core:core-testing:2.1.0")
+
+    implementation ("androidx.compose.ui:ui-test-junit4:1.5.1")
+    implementation ("androidx.compose.ui:ui-test-manifest:1.5.1")
+
 
 
 

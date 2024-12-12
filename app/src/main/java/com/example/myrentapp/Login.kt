@@ -8,6 +8,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
@@ -47,7 +48,9 @@ fun LoginFormLayout(viewModel: UserViewModel, navController: NavController) {
             label = { Text("Username", color = Color.White) },
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color.Transparent),
+                .testTag("usernameField") // Add TestTag
+
+            .background(Color.Transparent),
             textStyle = MaterialTheme.typography.bodyLarge.copy(color = Color.White)
         )
         Spacer(modifier = Modifier.height(12.dp))
@@ -59,7 +62,9 @@ fun LoginFormLayout(viewModel: UserViewModel, navController: NavController) {
             visualTransformation = PasswordVisualTransformation(),
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color.Transparent),
+                .testTag("passwordField")// Add TestTag
+
+            .background(Color.Transparent),
             textStyle = MaterialTheme.typography.bodyLarge.copy(color = Color.White)
         )
         Spacer(modifier = Modifier.height(24.dp))
@@ -67,6 +72,7 @@ fun LoginFormLayout(viewModel: UserViewModel, navController: NavController) {
         when (loginState) {
             is LoginState.Idle, is LoginState.Error -> {
                 Button(
+
                     onClick = { viewModel.login(username, password) },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = accentColor,
@@ -76,6 +82,9 @@ fun LoginFormLayout(viewModel: UserViewModel, navController: NavController) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(50.dp)
+                        .testTag("loginButton"), // Add TestTag
+
+
                 ) {
                     Text("Login", fontWeight = FontWeight.SemiBold)
                 }
