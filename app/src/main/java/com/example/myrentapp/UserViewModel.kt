@@ -146,14 +146,12 @@ open class UserViewModel : ViewModel() {
                     }
 
                     if (parsedResponse != null) {
-                        // Update the session with the newly registered user
                         _userSession.value = UserSession(token = "", username = parsedResponse.username)
                         _registerState.value = RegisterState.Success(parsedResponse.username)
                         _debugInfo.value += "\nRegistration successful. Username: ${parsedResponse.username}"
                     } else {
                         _registerState.value = RegisterState.Success(username)
                         _debugInfo.value += "\nRegistration assumed successful, but couldn't parse response. Using provided username: $username"
-                        // Update the session as a fallback
                         _userSession.value = UserSession(token = "", username = username)
                     }
                 } else {

@@ -66,14 +66,9 @@ class UserViewModelLoginTest {
 
     @Test
     fun testLoginCorrect() = runBlocking {
-        // Test with correct credentials
+
         val correctLoginRequest = LoginRequest(username = "test", password = "test")
         val correctResponse = api.login(correctLoginRequest)
         assertTrue("Login should succeed with correct credentials", correctResponse.isSuccessful)
-
-        // Test with incorrect credentials
-//        val incorrectLoginRequest = LoginRequest(username = "wrongUser", password = "wrongPass")
-//        val incorrectResponse = api.login(incorrectLoginRequest)
-//        assertFalse("Login should fail with incorrect credentials", incorrectResponse.isSuccessful)
     }
 }

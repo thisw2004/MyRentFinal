@@ -48,19 +48,17 @@ class MyCars : ComponentActivity() {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyCarsLayout(viewModel: CarViewModel, navController: NavController) {
-    // Start fetching rented vehicles when the Composable is first composed
     LaunchedEffect(Unit) {
         viewModel.fetchRentedVehicles()
     }
 
     val rentedVehicles by viewModel.rentedVehiclesState.collectAsState()
 
-    val backgroundColor = Color(0xFF1A1D1E) // Dark background color
-    val accentColor = Color(0xFF4AC0FF) // Light blue accent color
-    val textColor = Color(0xFFB0BEC5) // Light grey for better readability
+    val backgroundColor = Color(0xFF1A1D1E)
+    val accentColor = Color(0xFF4AC0FF)
+    val textColor = Color(0xFFB0BEC5)
 
     Column(
         modifier = Modifier
@@ -74,7 +72,7 @@ fun MyCarsLayout(viewModel: CarViewModel, navController: NavController) {
         verticalArrangement = Arrangement.Top
     ) {
         // Title
-        Spacer(modifier = Modifier.height(24.dp)) // Move the title down
+        Spacer(modifier = Modifier.height(24.dp))
         Text(
             text = stringResource(R.string.MyCarTitle),
             style = MaterialTheme.typography.displaySmall.copy(
@@ -87,7 +85,6 @@ fun MyCarsLayout(viewModel: CarViewModel, navController: NavController) {
 
         Spacer(modifier = Modifier.height(30.dp))
 
-        // List of rented cars
         if (rentedVehicles.isNotEmpty()) {
             Column(
                 modifier = Modifier.fillMaxWidth(),
@@ -96,13 +93,13 @@ fun MyCarsLayout(viewModel: CarViewModel, navController: NavController) {
                 rentedVehicles.forEach { vehicle ->
                     Card(
                         onClick = {
-                            navController.navigate("carViewOwnedCar/${vehicle.id}")  // Navigate with the car ID
+                            navController.navigate("carViewOwnedCar/${vehicle.id}")
                         },
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 8.dp),
                         colors = CardDefaults.cardColors(
-                            containerColor = Color(0xFF2E3135) // Darker color for the card
+                            containerColor = Color(0xFF2E3135)
                         ),
                         shape = RoundedCornerShape(10.dp),
                         elevation = CardDefaults.cardElevation(8.dp)
@@ -129,7 +126,6 @@ fun MyCarsLayout(viewModel: CarViewModel, navController: NavController) {
                 }
             }
         } else {
-            // Message when there are no rented vehicles
             Text(
                 text = "No rented cars available.",
                 style = MaterialTheme.typography.bodyMedium.copy(color = textColor),

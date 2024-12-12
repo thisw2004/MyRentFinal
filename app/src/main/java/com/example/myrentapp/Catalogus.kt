@@ -37,7 +37,6 @@ class Catalogus : ComponentActivity() {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
-        // Initialize CarViewModel without explicitly passing UserViewModel
         carViewModel = ViewModelProvider(this).get(CarViewModel::class.java)
 
         setContent {
@@ -61,8 +60,8 @@ fun CatalogusLayout(viewModel: CarViewModel, navController: NavController) {
         viewModel.fetchAvailableVehicles()
     }
 
-    val backgroundColor = Color(0xFF1A1D1E) // Dark background color
-    val accentColor = Color(0xFF4AC0FF) // Light blue accent color
+    val backgroundColor = Color(0xFF1A1D1E)
+    val accentColor = Color(0xFF4AC0FF)
 
     Column(
         modifier = Modifier
@@ -89,7 +88,7 @@ fun CatalogusLayout(viewModel: CarViewModel, navController: NavController) {
                 brand = "${vehicle.brand} ${vehicle.model}",
                 photoBase64 = vehicle.photoId,
                 onClick = {
-                    navController.navigate("AvailableCar1/${vehicle.id}") // Use the dynamic route with car ID
+                    navController.navigate("AvailableCar1/${vehicle.id}")
                 }
             )
         }
@@ -107,7 +106,7 @@ fun CatalogVehicleCard(brand: String, photoBase64: String?, onClick: () -> Unit)
             .clip(RoundedCornerShape(15.dp)),
         shape = RoundedCornerShape(15.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color(0xFF2E3135) // Darker background for contrast
+            containerColor = Color(0xFF2E3135)
         ),
         elevation = CardDefaults.cardElevation(8.dp),
         onClick = onClick
@@ -135,7 +134,7 @@ fun CatalogVehicleCard(brand: String, photoBase64: String?, onClick: () -> Unit)
             Text(
                 text = brand,
                 style = MaterialTheme.typography.bodyLarge.copy(
-                    color = Color(0xFFB0BEC5), // Light grey color for better readability
+                    color = Color(0xFFB0BEC5),
                     fontWeight = FontWeight.Bold
                 ),
                 modifier = Modifier.padding(top = 8.dp)
@@ -158,7 +157,7 @@ fun CatalogButton(text: String, onClick: () -> Unit) {
     Button(
         onClick = onClick,
         colors = ButtonDefaults.buttonColors(
-            containerColor = Color(0xFF4AC0FF), // Light blue accent color
+            containerColor = Color(0xFF4AC0FF),
             contentColor = Color.Black
         ),
         shape = RoundedCornerShape(10.dp),
@@ -175,7 +174,7 @@ fun CatalogButton(text: String, onClick: () -> Unit) {
 @Composable
 fun CatalogusPreview() {
     MyRentAppTheme {
-        // Create a dummy CarViewModel for preview
+
         val dummyViewModel = CarViewModel(UserViewModel())
         CatalogusLayout(dummyViewModel, rememberNavController())
     }

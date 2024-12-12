@@ -26,7 +26,7 @@ class VehicleAddTest {
     @Test
     fun testAddUniqueVehicle() = runBlocking {
         try {
-            // Step 1: Login and retrieve bearer token
+            // Login and retrieve bearer token
             val loginRequest = LoginRequest(username = "test", password = "test")
             val loginResponse: Response<LoginResponse> = api.login(loginRequest)
 
@@ -34,19 +34,19 @@ class VehicleAddTest {
 
             val token = loginResponse.body()?.token ?: throw IllegalStateException("Bearer token missing")
 
-            // Step 2: Fetch all vehicles to check if a unique model is needed
+            // Fetch all vehicles to check if a unique model is needed
             val vehiclesResponse: Response<List<VehicleResponse>> = api.getAllVehicles("Bearer $token")
             assertTrue("Failed to fetch vehicles", vehiclesResponse.isSuccessful)
 
             val vehicles = vehiclesResponse.body() ?: throw IllegalStateException("Vehicles list is empty")
 
-            // Step 3: Generate a unique model name for the vehicle
+            // Generate a unique model name for the vehicle
             var uniqueModelName: String
             do {
                 uniqueModelName = generateUniqueModelName()
             } while (vehicles.any { it.model == uniqueModelName })
 
-            // Step 4: Add the new vehicle
+            // Add the new vehicle
             val addVehicleRequest = AddVehicleRequest(
                 brand = "Toyota${vehicleCounter}",
                 model = uniqueModelName,

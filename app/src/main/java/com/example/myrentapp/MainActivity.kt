@@ -65,9 +65,6 @@ class MainActivity : ComponentActivity() {
                             }
                         }
 
-//                        composable("carViewOwnedCar") {
-//                            CarViewOwnedCarLayout(carViewModel, navController)
-//                        }
                         composable("verhuren") {
                             VerhurenFormLayout(carViewModel, userViewModel, navController)
                         }

@@ -106,7 +106,7 @@ fun VerhurenFormLayout(carViewModel: CarViewModel, userViewModel: UserViewModel,
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF1A1D1E)) // Dark background color
+            .background(Color(0xFF1A1D1E))
             .padding(16.dp)
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally

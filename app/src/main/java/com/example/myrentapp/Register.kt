@@ -26,11 +26,9 @@ fun RegisterFormLayout(viewModel: UserViewModel, navController: NavController) {
     var email by remember { mutableStateOf("") }
     val registerState by viewModel.registerState.collectAsState()
 
-    // Accent and background colors
-    val backgroundColor = Color(0xFF1A1D1E) // Dark background color
-    val accentColor = Color(0xFF4AC0FF) // Light blue accent color
+    val backgroundColor = Color(0xFF1A1D1E)
+    val accentColor = Color(0xFF4AC0FF)
 
-    // Reset the ViewModel state when entering this screen
     LaunchedEffect(Unit) {
         viewModel.logout()
     }
@@ -54,7 +52,6 @@ fun RegisterFormLayout(viewModel: UserViewModel, navController: NavController) {
         )
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Username input field
         OutlinedTextField(
             value = username,
             onValueChange = { username = it },
@@ -66,13 +63,12 @@ fun RegisterFormLayout(viewModel: UserViewModel, navController: NavController) {
                 unfocusedBorderColor = Color.Gray,
                 focusedLabelColor = accentColor,
                 unfocusedLabelColor = Color.Gray,
-                containerColor = Color.Transparent // Set container color to transparent
+                containerColor = Color.Transparent
             ),
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(modifier = Modifier.height(12.dp))
 
-        // Password input field
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
@@ -85,13 +81,12 @@ fun RegisterFormLayout(viewModel: UserViewModel, navController: NavController) {
                 unfocusedBorderColor = Color.Gray,
                 focusedLabelColor = accentColor,
                 unfocusedLabelColor = Color.Gray,
-                containerColor = Color.Transparent // Set container color to transparent
+                containerColor = Color.Transparent
             ),
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(modifier = Modifier.height(12.dp))
 
-        // Email input field
         OutlinedTextField(
             value = email,
             onValueChange = { email = it },
@@ -103,7 +98,7 @@ fun RegisterFormLayout(viewModel: UserViewModel, navController: NavController) {
                 unfocusedBorderColor = Color.Gray,
                 focusedLabelColor = accentColor,
                 unfocusedLabelColor = Color.Gray,
-                containerColor = Color.Transparent // Set container color to transparent
+                containerColor = Color.Transparent
             ),
             modifier = Modifier.fillMaxWidth()
         )

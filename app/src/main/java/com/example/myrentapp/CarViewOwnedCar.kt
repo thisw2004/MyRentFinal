@@ -198,7 +198,6 @@ fun GoogleMapViewCarDetails(location: LatLng) {
     )
 }
 
-// Decode Base64 string to Bitmap
 fun decodeBase64ToBitmap(base64Str: String): Bitmap? {
     return try {
         val decodedBytes = Base64.decode(base64Str, Base64.DEFAULT)

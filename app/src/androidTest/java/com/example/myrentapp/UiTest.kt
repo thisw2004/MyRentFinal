@@ -17,10 +17,8 @@ class LoginComposeTest {
 
     @Test
     fun testLoginProcess() {
-        // Create a mock UserViewModel with a predefined successful login
         val userViewModel = object : UserViewModel() {
             override fun login(username: String, password: String) {
-                // Simulate a successful login by directly setting the login state
                 _loginState.value = LoginState.Success("mockToken", username)
             }
         }
@@ -40,35 +38,35 @@ class LoginComposeTest {
             }
         }
 
-        // Step 1: Navigate to Login screen
+        // Navigate to Login screen
         composeTestRule.onNodeWithTag("mainLoginButton")
             .assertIsDisplayed()
             .performClick()
 
         Thread.sleep(1000)
 
-        // Step 2: Enter username
+        // Enter username
         composeTestRule.onNodeWithTag("usernameField")
             .assertIsDisplayed()
             .performTextInput("test")
 
         Thread.sleep(1000)
 
-        // Step 3: Enter password
+        // Enter password
         composeTestRule.onNodeWithTag("passwordField")
             .assertIsDisplayed()
             .performTextInput("test")
 
         Thread.sleep(1000)
 
-        // Step 4: Click login button
+        // Click login button
         composeTestRule.onNodeWithTag("loginButton")
             .assertIsDisplayed()
             .performClick()
 
         Thread.sleep(1000)
 
-        // Step 5: Verify navigation to HomeScreen
+        // Verify navigation to HomeScreen
         composeTestRule.onNodeWithTag("homeScreenContainer")
             .assertIsDisplayed()
 

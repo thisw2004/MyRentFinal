@@ -74,13 +74,11 @@ fun HurenLayout(viewModel: CarViewModel, navController: NavController) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        // Title
         Text(
             text = stringResource(R.string.titleHuren),
             style = MaterialTheme.typography.displaySmall,
         )
 
-        // License validity and car data (placeholder text here)
         Text(
             text = stringResource(R.string.LicenseValid),
             modifier = Modifier
@@ -103,26 +101,21 @@ fun HurenLayout(viewModel: CarViewModel, navController: NavController) {
 
         Spacer(modifier = Modifier.height(15.dp))
 
-        // Button for confirming the rental
         Button(onClick = {
-            // Assuming the car ID is "1" for this example
             val carId = "1"
             viewModel.hireVehicle(carId) {
-                // On success, navigate to "My Cars" page
                 navController.navigate("myCars")
             }
         }) {
             Text(stringResource(R.string.ConfirmHuren))
         }
 
-        // Display success, loading, or error messages based on the state
         when (addVehicleState) {
             is AddVehicleState.Loading -> {
                 Text("Processing...")
             }
             is AddVehicleState.Success -> {
                 Text((addVehicleState as AddVehicleState.Success).message)
-                // Navigation happens on success callback, so no need to handle it here
             }
             is AddVehicleState.Error -> {
                 Text((addVehicleState as AddVehicleState.Error).message)

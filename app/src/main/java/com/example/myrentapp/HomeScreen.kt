@@ -51,7 +51,6 @@ fun HomeScreenLayout(sharedViewModel: UserViewModel, navController: NavControlle
 
         Spacer(modifier = Modifier.height(60.dp))
 
-        // Buttons for navigation
         Button(
             onClick = { navController.navigate("catalogus") },
             colors = ButtonDefaults.buttonColors(
@@ -101,7 +100,6 @@ fun HomeScreenLayout(sharedViewModel: UserViewModel, navController: NavControlle
 
         Button(
             onClick = {
-                // Implement logout logic
                 sharedViewModel.logout()
                 navController.navigate("mymainscreen") {
                     popUpTo("mymainscreen") { inclusive = true }

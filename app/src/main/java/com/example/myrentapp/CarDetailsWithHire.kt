@@ -49,9 +49,9 @@ fun CarDetailsWithHireLayout(carViewModel: CarViewModel, navController: NavContr
         }
     }
 
-    val backgroundColor = Color(0xFF1A1D1E) // Dark background color
-    val accentColor = Color(0xFF4AC0FF) // Light blue accent color
-    val textColor = Color(0xFFB0BEC5) // Light grey color for text
+    val backgroundColor = Color(0xFF1A1D1E)
+    val accentColor = Color(0xFF4AC0FF)
+    val textColor = Color(0xFFB0BEC5)
 
     Column(
         modifier = Modifier
@@ -68,7 +68,7 @@ fun CarDetailsWithHireLayout(carViewModel: CarViewModel, navController: NavContr
             is VehicleState.Success -> {
                 val vehicle = (vehicleState as VehicleState.Success).vehicle
 
-                Spacer(modifier = Modifier.height(30.dp)) // Add space to move the title down
+                Spacer(modifier = Modifier.height(30.dp))
                 Text(
                     text = "${vehicle.brand} ${vehicle.model}",
                     style = MaterialTheme.typography.headlineMedium.copy(
@@ -76,7 +76,7 @@ fun CarDetailsWithHireLayout(carViewModel: CarViewModel, navController: NavContr
                         fontWeight = FontWeight.Bold,
                         fontSize = 28.sp
                     ),
-                    modifier = Modifier.align(Alignment.CenterHorizontally) // Center the title text
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -218,7 +218,6 @@ fun GoogleMapViewHire(location: LatLng) {
     )
 }
 
-// Decode Base64 string to Bitmap
 fun decodeBase64ToBitmapHire(base64Str: String): Bitmap? {
     return try {
         val decodedBytes = Base64.decode(base64Str, Base64.DEFAULT)

@@ -22,8 +22,8 @@ fun LoginFormLayout(viewModel: UserViewModel, navController: NavController) {
     var password by remember { mutableStateOf("") }
     val loginState by viewModel.loginState.collectAsState()
 
-    val backgroundColor = Color(0xFF1A1D1E) // Dark background color
-    val accentColor = Color(0xFF4AC0FF) // Light blue for accent elements
+    val backgroundColor = Color(0xFF1A1D1E)
+    val accentColor = Color(0xFF4AC0FF)
 
     Column(
         modifier = Modifier

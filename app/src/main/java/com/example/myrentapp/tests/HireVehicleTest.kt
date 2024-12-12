@@ -19,7 +19,7 @@ class VehicleHireTest {
     @Test
     fun testHuurEersteBeschikbareVoertuig() = runBlocking {
         try {
-            // Step 1: Login and retrieve bearer token
+            //Login and retrieve bearer token
             val loginRequest = LoginRequest(username = "test", password = "test")
             val loginResponse: Response<LoginResponse> = api.login(loginRequest)
 
@@ -27,7 +27,7 @@ class VehicleHireTest {
 
             val token = loginResponse.body()?.token ?: throw IllegalStateException("Bearer token missing")
 
-            // Step 2: Fetch the first available vehicle
+            // Fetch the first available vehicle
             val vehiclesResponse: Response<List<VehicleResponse>> = api.getAvailableVehicles("Bearer $token")
             assertTrue("Failed to fetch available vehicles", vehiclesResponse.isSuccessful)
 
@@ -37,7 +37,7 @@ class VehicleHireTest {
             val firstVehicle = vehicles.firstOrNull()
             assertTrue("No available vehicles to hire", firstVehicle != null)
 
-            // Step 3: Hire the first vehicle
+            // Hire the first vehicle
             val hireRequest = HireRequest(carId = firstVehicle!!.id)
             val hireResponse: Response<Unit> = api.hireVehicle("Bearer $token", hireRequest)
 
